@@ -7,4 +7,4 @@ export interface BaseExpenseType {
   type: ExpenseType;
 }
 
-export type AnyExpenseType = BaseExpenseType & Record<string, number>;
+export type AnyExpenseType = BaseExpenseType & Record<string, string | number>;

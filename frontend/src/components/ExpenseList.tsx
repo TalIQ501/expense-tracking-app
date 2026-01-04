@@ -1,4 +1,5 @@
 import { useExpensesApi } from "../hook/useExpensesApi";
+import { ExpenseItem } from "./ExpenseItem";
 import { Loading } from "./Loading";
 
 export const ExpenseList = () => {
@@ -9,9 +10,11 @@ export const ExpenseList = () => {
 
   return (
     <ul>
-      {data.map((e) => (
-        <li key={`${e.type}-${e.id}`}>
-          [{e.type}] Rs. {e.amount}
+      {data.map((expense) => (
+        <li key={`${expense.type}-${expense.id}`}>
+          <ExpenseItem
+            expense={expense}
+          />
         </li>
       ))}
     </ul>

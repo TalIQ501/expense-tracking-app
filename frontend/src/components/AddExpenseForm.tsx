@@ -30,8 +30,6 @@ export const AddExpenseForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(form);
-    
     addExpense(formTypeState, form);
 
     setForm(initialState);
