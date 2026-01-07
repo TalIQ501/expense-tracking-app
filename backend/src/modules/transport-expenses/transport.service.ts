@@ -44,7 +44,7 @@ export const transportService = (repo: transportRepository) => {
     const result = repo.remove(id);
 
     if (result.changes === 0) {
-      throw new Error("Transport expense not found")
+      throw new Error("Transport expense not found");
     }
   };
 

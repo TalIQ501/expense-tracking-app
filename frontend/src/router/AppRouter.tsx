@@ -12,9 +12,7 @@ export const AppRouter = () => {
     <>
       <Navbar />
       <section className="flex flex-col p-3 gap-4 w-full max-h-10">
-        <Suspense fallback={<Loading />}>
-          {element}
-        </Suspense>
+        <Suspense fallback={<Loading />}>{element}</Suspense>
       </section>
     </>
   );

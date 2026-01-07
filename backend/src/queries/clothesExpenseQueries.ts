@@ -1,6 +1,8 @@
 export const getClothesExpensesQuery = `
-SELECT * FROM clothes_expenses ORDER BY expense_date DESC;
-`;
+SELECT * FROM clothes_expenses 
+WHERE is_deleted = 0
+ORDER BY expense_date DESC
+;`;
 
 export const getClothesExpensesByIdQuery = `
 SELECT * FROM clothes_expenses WHERE id = ?;
@@ -14,7 +16,7 @@ VALUES (@expense_date, @item, @amount, @quantity, @category, @brand, @store, @ad
 
 export const deleteClothesExpensesQuery = `
 UPDATE clothes_expenses SET
-is_deleted = 1
+is_deleted = 1,
 deleted_at = CURRENT_TIMESTAMP
 WHERE id = ?
 `;

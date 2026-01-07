@@ -7,7 +7,6 @@ import {
   updateGeneralExpensesQuery,
 } from "../../queries/generalExpenseQueries";
 import type { GeneralExpenseType } from "./general";
-import { logger } from "../../plugins/loggerPlugin";
 
 export const generalExpenseRepository = (db: Database) => {
   const findAll = () => {
@@ -21,9 +20,6 @@ export const generalExpenseRepository = (db: Database) => {
   const create = (data: GeneralExpenseType) => {
     const stmt = db.prepare(createGeneralExpensesQuery);
 
-    logger.info("Type");
-    logger.info(typeof data);
-
     const info = stmt.run({
       expense_date: data.expense_date,
       purpose: data.purpose,
@@ -33,9 +29,6 @@ export const generalExpenseRepository = (db: Database) => {
       address: data.address,
       rating: data.rating,
     });
-
-    logger.info("Info");
-    logger.info(info);
 
     return info.lastInsertRowid;
   };

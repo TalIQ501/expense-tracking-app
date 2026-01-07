@@ -1,6 +1,9 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const api = async <T>(path: string, options?: RequestInit) => {
+export const api = async <T>(
+  path: string,
+  options?: RequestInit,
+) => {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
   });

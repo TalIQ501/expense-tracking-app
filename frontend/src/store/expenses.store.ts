@@ -7,7 +7,7 @@ import { isError } from "../utils/isError";
 import type { FormState } from "../types/formStateType";
 
 interface ExpenseStateType {
-  expenses: ExpenseType[];
+  expenses: AnyExpenseType[];
   loading: boolean;
   error: string | null;
   fetchExpenses: () => Promise<void>;
@@ -15,6 +15,7 @@ interface ExpenseStateType {
     type: ExpenseType,
     data: FormState<T>
   ) => Promise<void>;
+  deleteExpense: (type: ExpenseType, id: number) => Promise<void>;
 }
 
 export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
@@ -47,12 +48,28 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
     try {
       const created = await api<AnyExpenseType>(`/${type}`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       set((state) => ({
         expenses: [...state.expenses, { ...created, type }],
+      }));
+    } catch (err) {
+      console.error("Failed to add expense", err);
+    }
+  },
+
+  deleteExpense: async (type, id) => {
+    try {
+      console.log(`ID is ${id}`)
+
+      await api<AnyExpenseType>(`/${type}/${id}`, {
+        method: "DELETE",
+      });
+
+      set((state) => ({
+        expenses: state.expenses.filter((expense) => expense.id === id),
       }));
     } catch (err) {
       console.error("Failed to add expense", err);

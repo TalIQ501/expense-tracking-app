@@ -1,6 +1,8 @@
 export const getTransportExpensesQuery = `
-SELECT * FROM transport_expenses ORDER BY expense_date DESC;
-`;
+SELECT * FROM transport_expenses
+WHERE is_deleted <> 1
+ORDER BY expense_date DESC
+;`;
 
 export const getTransportExpensesByIdQuery = `
 SELECT * FROM transport_expenses WHERE id = ?;
@@ -14,7 +16,7 @@ VALUES (@expense_date, @mode, @amount, @origin, @origin_region, @destination, @d
 
 export const deleteTransportExpensesQuery = `
 UPDATE transport_expenses SET
-is_deleted = 1
+is_deleted = 1,
 deleted_at = CURRENT_TIMESTAMP
 WHERE id = ?
 `;

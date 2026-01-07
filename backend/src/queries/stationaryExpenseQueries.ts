@@ -1,6 +1,8 @@
 export const getStationaryExpensesQuery = `
-SELECT * FROM stationary_expenses ORDER BY expense_date DESC;
-`;
+SELECT * FROM stationary_expenses
+WHERE is_deleted <> 1
+ORDER BY expense_date DESC
+;`;
 
 export const getStationaryExpensesByIdQuery = `
 SELECT * FROM stationary_expenses WHERE id = ?;
@@ -14,7 +16,7 @@ VALUES (@expense_date, @item, @amount, @quantity, @category, @brand, @store, @ad
 
 export const deleteStationaryExpensesQuery = `
 UPDATE stationary_expenses SET
-is_deleted = 1
+is_deleted = 1,
 deleted_at = CURRENT_TIMESTAMP
 WHERE id = ?
 `;

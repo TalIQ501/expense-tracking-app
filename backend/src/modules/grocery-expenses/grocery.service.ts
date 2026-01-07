@@ -44,7 +44,7 @@ export const groceryService = (repo: groceryRepository) => {
     const result = repo.remove(id);
 
     if (result.changes === 0) {
-      throw new Error("Grocery expense not found")
+      throw new Error("Grocery expense not found");
     }
   };
 

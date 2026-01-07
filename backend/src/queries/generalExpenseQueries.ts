@@ -1,6 +1,8 @@
 export const getGeneralExpensesQuery = `
-SELECT * FROM general_expenses ORDER BY expense_date DESC;
-`;
+SELECT * FROM general_expenses 
+WHERE is_deleted <> 1
+ORDER BY expense_date DESC
+;`;
 
 export const getGeneralExpensesByIdQuery = `
 SELECT * FROM general_expenses WHERE id = ?;
@@ -14,7 +16,7 @@ VALUES (@expense_date, @purpose, @amount, @description, @given_to, @address, @ra
 
 export const deleteGeneralExpensesQuery = `
 UPDATE general_expenses SET
-is_deleted = 1
+is_deleted = 1,
 deleted_at = CURRENT_TIMESTAMP
 WHERE id = ?
 `;
