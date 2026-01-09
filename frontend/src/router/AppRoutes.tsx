@@ -11,14 +11,8 @@ const ExpensesPage = lazy(() =>
   }))
 );
 
-const AddExpensesPage = lazy(() =>
-  import("../pages/AddExpensesPage").then((module) => ({
-    default: module.AddExpensesPage,
-  }))
-);
 
 export const routes: RouteObject[] = [
   { path: "/", element: <HomePage /> },
   { path: "/expenses", element: <ExpensesPage /> },
-  { path: "/add", element: <AddExpensesPage /> },
 ];

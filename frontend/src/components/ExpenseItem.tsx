@@ -1,4 +1,4 @@
-import { useExpenseStore } from "../store/expenses.store";
+import { useExpenseStore } from "../store/useExpenseStore";
 import type { AnyExpenseType } from "../types/expense";
 import { expenseDisplayConfig } from "../types/expenseDisplay";
 

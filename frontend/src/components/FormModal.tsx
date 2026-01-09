@@ -1,25 +1,25 @@
 import { Dialog } from "@headlessui/react";
-import { useState } from "react";
+import { useFormModalStore } from "../store/useFormModalStore";
+import { AddExpenseForm } from "./AddExpenseForm";
 
 export const FormModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useFormModalStore((state) => state.isOpen);
+  const closeModal = useFormModalStore((state) => state.closeModal);
 
   return (
     <>
-      <Dialog open={isOpen} onClose={setIsOpen} className="z-50">
-        <div className="flex items-center justify-center">
-          <div 
-            className="
-              w-full max-w-md rounded bg-white p-6 shadow-lg
-              transition duration-300
-              data-enter:opacity-0 data-enter:scale-95
-              data-enter-to:opacity-100 data-enter-to:scale-100
-              data-leave:opacity-100 data-leave-to:opacity-0 data-leave-to:scale-95
-          ">
-
+      <Dialog open={isOpen} onClose={closeModal} className="z-50">
+        <div className="fixed inset-0 bg-black/40" />
+        <div className="fixed inset-0 flex items-center justify-center">
+          <div className="bg-white p-6 rounded">
+            <button 
+              className=""
+              onClick={closeModal}
+            >X</button>
+            <AddExpenseForm />
           </div>
         </div>
       </Dialog>
     </>
-  )
+  );
 };

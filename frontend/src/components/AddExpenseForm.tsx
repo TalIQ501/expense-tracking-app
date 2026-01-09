@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EXPENSE_FIELDS, type FieldConfig } from "../field-links/expenseFields";
 import { type ExpenseType } from "../types/expenseTypes";
-import { useExpenseStore } from "../store/expenses.store";
+import { useExpenseStore } from "../store/useExpenseStore";
 import { type FormState } from "../types/formStateType";
 
 export const AddExpenseForm = () => {
