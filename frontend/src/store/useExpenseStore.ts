@@ -62,7 +62,7 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
 
   deleteExpense: async (type, id) => {
     try {
-      console.log(`ID is ${id}`)
+      console.log(`ID is ${id}`);
 
       await api<AnyExpenseType>(`/${type}/${id}`, {
         method: "DELETE",
