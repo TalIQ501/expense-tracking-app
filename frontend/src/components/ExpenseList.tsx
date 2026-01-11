@@ -8,7 +8,7 @@ export const ExpenseList = () => {
 
   useEffect(() => {
     fetchExpenses();
-  }, [expenses]);
+  }, [fetchExpenses]);
 
   if (loading) return <Loading />;
   if (error) return <p>Error loading expenses...</p>;

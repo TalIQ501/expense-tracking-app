@@ -10,7 +10,7 @@ interface ExpenseStateType {
   expenses: AnyExpenseType[];
   loading: boolean;
   error: string | null;
-  fetchExpenses: () => Promise<void>;
+  fetchExpenses: () =>    Promise<void>;
   addExpense: <T extends ExpenseType>(
     type: ExpenseType,
     data: FormState<T>
@@ -24,7 +24,7 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
   error: null,
 
   fetchExpenses: async () => {
-    if (get().loading || get().expenses.length > 0) return;
+    if (get().loading) return;
 
     set({ loading: true, error: null });
 
@@ -69,7 +69,7 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
       });
 
       set((state) => ({
-        expenses: state.expenses.filter((expense) => expense.id === id),
+        expenses: state.expenses.filter((expense) => expense.id !== id),
       }));
     } catch (err) {
       console.error("Failed to add expense", err);
