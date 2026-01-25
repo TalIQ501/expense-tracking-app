@@ -4,7 +4,7 @@ type SummaryStateType = {
   summary: number;
   loading: boolean;
   error: string | null;
-  fetchSummary: () => Promise<void>
+  fetchSummary: () => Promise<void>;
 };
 
 export const useSummaryStore = create<SummaryStateType>((set, get) => ({
@@ -12,5 +12,15 @@ export const useSummaryStore = create<SummaryStateType>((set, get) => ({
   loading: false,
   error: null,
 
+  fetchSummary: async () => {
+    if (get().loading) return;
 
-}))
+    set({ loading: true, error: null });
+
+    try {
+      const summary = 
+    } catch (err) {
+
+    }
+  },
+}));
