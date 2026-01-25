@@ -45,7 +45,7 @@ export const generalRoutes: FastifyPluginAsync = async (
         reply.code(400).send({ message: err.message });
         return;
       }
-      reply.code(500).send({ message: 'Unknown error' });
+      reply.code(500).send({ message: "Unknown error" });
       return;
     }
   });

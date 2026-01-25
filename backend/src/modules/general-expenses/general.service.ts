@@ -44,7 +44,7 @@ export const generalExpenseService = (repo: generalExpenseRepository) => {
     const result = repo.remove(id);
 
     if (result.changes === 0) {
-      throw new Error("General expense not found")
+      throw new Error("General expense not found");
     }
   };
 

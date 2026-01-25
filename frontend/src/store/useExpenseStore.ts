@@ -10,7 +10,7 @@ interface ExpenseStateType {
   expenses: AnyExpenseType[];
   loading: boolean;
   error: string | null;
-  fetchExpenses: () =>    Promise<void>;
+  fetchExpenses: () => Promise<void>;
   addExpense: <T extends ExpenseType>(
     type: ExpenseType,
     data: FormState<T>
