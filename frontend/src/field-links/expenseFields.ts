@@ -1,9 +1,11 @@
 import type { ExpenseType } from "../types/expenseTypes";
 
-export interface FieldConfig {
+export type FieldType = "text" | "number" | "date" | "select";
+
+export type FieldConfig = {
   name: string;
   label: string;
-  type: "text" | "number" | "date" | "select";
+  type: FieldType;
   options?: string[];
 }
 

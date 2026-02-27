@@ -46,33 +46,29 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
 
   addExpense: async (type, data) => {
     try {
-      const created = await api<AnyExpenseType>(`/${type}`, {
+      await api<AnyExpenseType>(`/${type}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      set((state) => ({
-        expenses: [...state.expenses, { ...created, type }],
-      }));
+      await get().fetchExpenses()
     } catch (err) {
       console.error("Failed to add expense", err);
+      set({ error: "Failed to add expense" })
     }
   },
 
   deleteExpense: async (type, id) => {
     try {
-      console.log(`ID is ${id}`);
-
       await api<AnyExpenseType>(`/${type}/${id}`, {
         method: "DELETE",
       });
 
-      set((state) => ({
-        expenses: state.expenses.filter((expense) => expense.id !== id),
-      }));
+      await get().fetchExpenses()
     } catch (err) {
-      console.error("Failed to add expense", err);
+      console.error("Failed to delete expense", err);
+      set({ error: "Failed to delete expense" })
     }
   },
 }));

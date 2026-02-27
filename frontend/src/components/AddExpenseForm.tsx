@@ -3,26 +3,30 @@ import { EXPENSE_FIELDS, type FieldConfig } from "../field-links/expenseFields";
 import { type ExpenseType } from "../types/expenseTypes";
 import { useExpenseStore } from "../store/useExpenseStore";
 import { type FormState } from "../types/formStateType";
+import { buildSchema } from "../schema/ZodField";
+
+type FormErrors = Record<string, string>;
 
 export const AddExpenseForm = () => {
   const expenseKeys = Object.keys(EXPENSE_FIELDS) as ExpenseType[];
 
   const [formTypeState, setFormTypeState] = useState<ExpenseType>("general");
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const fields = EXPENSE_FIELDS[formTypeState];
   const addExpense = useExpenseStore((store) => store.addExpense);
 
   const initialState = Object.fromEntries(
-    fields.map((f) => [f.name, f.type === "number" ? 0 : ""])
+    fields.map((f) => [f.name, f.type === "number" ? 0 : ""]),
   );
 
   const [form, setForm] = useState<FormState<typeof formTypeState>>(
-    initialState as FormState<typeof formTypeState>
+    initialState as FormState<typeof formTypeState>,
   );
 
   const handleChange = <K extends keyof typeof form>(
     name: string,
-    value: (typeof form)[K]
+    value: (typeof form)[K],
   ) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -30,9 +34,28 @@ export const AddExpenseForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    addExpense(formTypeState, form);
+    const fields = EXPENSE_FIELDS[formTypeState];
+    const schema = buildSchema(fields);
 
-    setForm(initialState);
+    const result = schema.safeParse(form);
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as string;
+        fieldErrors[key] = issue.message;
+      }
+
+      setErrors(fieldErrors);
+      console.log('Error')
+      console.log(errors);
+    } else {
+      addExpense(formTypeState, form);
+      setForm(initialState);
+  
+      setErrors({});
+    }
   };
 
   return (
