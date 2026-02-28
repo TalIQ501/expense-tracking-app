@@ -28,7 +28,32 @@ export const AddExpenseForm = () => {
     name: string,
     value: (typeof form)[K],
   ) => {
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const newForm = { ...form, [name]: value };
+    setForm(newForm);
+
+    const schema = buildSchema(EXPENSE_FIELDS[formTypeState]);
+    const result = schema.safeParse(newForm);
+
+    if (!result.success) {
+      const newErrors: FormErrors = {};
+      
+      for (const issue of result.error.issues) {
+        const field = issue.path[0];
+  
+        if (typeof field === "string") {
+          newErrors[field] = issue.message;
+        }
+      }
+
+      setErrors(newErrors);
+    } else {
+      setErrors({});
+    }
+
+    setErrors(prev => {
+      const copy = { ...prev };
+      return copy;
+    })
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,22 +65,23 @@ export const AddExpenseForm = () => {
     const result = schema.safeParse(form);
 
     if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
+      const newErrors: FormErrors = {};
 
       for (const issue of result.error.issues) {
-        const key = issue.path[0] as string;
-        fieldErrors[key] = issue.message;
+        const field = issue.path[0];
+
+        if (typeof field === "string" && !newErrors[field]) {
+          newErrors[field] = issue.message;
+        }
       }
 
-      setErrors(fieldErrors);
-      console.log('Error')
-      console.log(errors);
-    } else {
-      addExpense(formTypeState, form);
-      setForm(initialState);
-  
-      setErrors({});
+      setErrors(newErrors);
+      return;
     }
+
+    addExpense(formTypeState, form);
+    setForm(initialState);
+    setErrors({});
   };
 
   return (
@@ -79,15 +105,40 @@ export const AddExpenseForm = () => {
             {field.type === "select" ? (
               <select
                 value={form[field.name]}
-                onChange={(e) => handleChange(field.name, e.target.value)}
+                onChange={(e) => 
+                  handleChange(
+                    field.name, 
+                    field.type === "number"
+                      ? Number(e.target.value)
+                      : e.target.value
+                  )
+                }
               ></select>
+              // {field.options?.map(option => (
+              //   <option key={option} value={option}>
+              //     {option}
+              //   </option>
+              // ))}
             ) : (
               <input
                 type={field.type}
                 value={form[field.name]}
                 onChange={(e) => handleChange(field.name, e.target.value)}
-                className="border rounded p-2"
+                className={`
+                  border rounded p-2
+                  ${errors[field.name]
+                    ? "border-red-500"
+                    : form[field.name]
+                    ? "border-green-500"
+                    : "border-gray-300"
+                  }
+                `}
               ></input>
+            )}
+            {errors[field.name] && (
+              <p className="text-red-500 text-sm">
+                {errors[field.name]}
+              </p>
             )}
           </div>
         ))}
