@@ -1,5 +1,6 @@
 import { foodRepository } from "./food.repository";
 import type { FoodType } from "./food";
+import { logger } from "../../plugins/loggerPlugin";
 
 export const foodService = (repo: foodRepository) => {
   const getAll = () => repo.findAll();
@@ -19,11 +20,13 @@ export const foodService = (repo: foodRepository) => {
   };
 
   const create = (data: FoodType) => {
-    if (!data.item || data.amount <= 0 || data.quantity <= 0) {
+    logger.info('Service Layer');
+
+    if (!data.item || data.amount <= 0) {
       throw new Error("Invalid food expense data");
     }
 
-    data.expense_date = new Date();
+    logger.info(data);
 
     return repo.create(data);
   };

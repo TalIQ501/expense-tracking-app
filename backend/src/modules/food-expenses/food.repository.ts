@@ -7,6 +7,7 @@ import {
   updateFoodExpensesQuery,
 } from "../../queries/foodExpenseQueries";
 import type { FoodType } from "./food";
+import { logger } from "../../plugins/loggerPlugin";
 
 export const foodRepository = (db: Database) => {
   const findAll = () => {
@@ -28,7 +29,6 @@ export const foodRepository = (db: Database) => {
       outlet: data.outlet,
       area: data.area,
       address: data.address,
-      category: data.category,
       rating: data.rating,
     });
 
@@ -46,7 +46,6 @@ export const foodRepository = (db: Database) => {
       expense_date: data.expense_date,
       item: data.item,
       amount: data.amount,
-      quantity: data.quantity,
       outlet: data.outlet,
       area: data.area,
       address: data.address,
