@@ -7,7 +7,6 @@ import {
   updateFoodExpensesQuery,
 } from "../../queries/foodExpenseQueries";
 import type { FoodType } from "./food";
-import { logger } from "../../plugins/loggerPlugin";
 
 export const foodRepository = (db: Database) => {
   const findAll = () => {
