@@ -12,17 +12,21 @@ export const ExpenseItem = ({ expense }: ExpenseItemProps) => {
   const config = expenseDisplayConfig[expense.type];
 
   return (
-    <div className="grid grid-cols-6 gap-2">
-      <div>{config.expense_date(expense)}</div>
-      <div>{config.type(expense)}</div>
-      <div className="col-span-2">{config.title(expense)}</div>
-      <button>Rs. {config.amount(expense)}</button>
-      <button
-        className="border-2 hover:bg-gray-100"
-        onClick={() => deleteExpense(config.type(expense), config.id(expense))}
-      >
-        Del
-      </button>
-    </div>
+    <tr className="border-b hover:bg-blue-50">
+      <td className="px-4 py-3">{config.expense_date(expense)}</td>
+      <td className="px-4 py-3">{config.type(expense)}</td>
+      <td className="px-4 py-3">{config.title(expense)}</td>
+      <td className="px-4 py-3">Rs. {config.amount(expense)}</td>
+      <td className="px-4 py-3">
+        <button
+          className="border-2 text-red-500 hover:bg-red-50 border-red-200 px-2"
+          onClick={() =>
+            deleteExpense(config.type(expense), config.id(expense))
+          }
+        >
+          Del
+        </button>
+      </td>
+    </tr>
   );
 };

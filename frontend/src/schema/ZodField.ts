@@ -35,7 +35,7 @@ const zodFieldFactory = (field: FieldConfig): ZodType => {
       schema = z.any();
   }
 
-  if (!field.validation?.required === false) {
+  if (!field.validation?.required) {
     schema = schema.optional();
   }
 

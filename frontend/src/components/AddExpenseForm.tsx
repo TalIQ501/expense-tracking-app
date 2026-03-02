@@ -36,10 +36,10 @@ export const AddExpenseForm = () => {
 
     if (!result.success) {
       const newErrors: FormErrors = {};
-      
+
       for (const issue of result.error.issues) {
         const field = issue.path[0];
-  
+
         if (typeof field === "string") {
           newErrors[field] = issue.message;
         }
@@ -50,10 +50,10 @@ export const AddExpenseForm = () => {
       setErrors({});
     }
 
-    setErrors(prev => {
+    setErrors((prev) => {
       const copy = { ...prev };
       return copy;
-    })
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,7 +85,7 @@ export const AddExpenseForm = () => {
   };
 
   return (
-    <div>
+    <div className="w-full max-w-2xl mx-auto h-[80vh] max-h-150 overflow-y-auto rounded-lg p-4 flex flex-col">
       <select
         value={formTypeState}
         onChange={(e) => setFormTypeState(e.target.value as ExpenseType)}
@@ -97,57 +97,67 @@ export const AddExpenseForm = () => {
           </option>
         ))}
       </select>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        {fields.map((field: FieldConfig) => (
-          <div key={field.name} className="flex items-center gap-2">
-            <label className="font-semibold">{field.label}</label>
+      <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+        <div className="grid grid-cols-2 gap-6">
+          {fields.map((field: FieldConfig) => (
+            <div key={field.name} className="flex flex-col gap-1">
+              <label className="font-semibold">{field.label}</label>
 
-            {field.type === "select" ? (
-              <select
-                value={form[field.name]}
-                onChange={(e) => 
-                  handleChange(
-                    field.name, 
-                    field.type === "number"
-                      ? Number(e.target.value)
-                      : e.target.value
-                  )
-                }
-              ></select>
-              // {field.options?.map(option => (
-              //   <option key={option} value={option}>
-              //     {option}
-              //   </option>
-              // ))}
-            ) : (
-              <input
-                type={field.type}
-                value={form[field.name]}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                className={`
-                  border rounded p-2
-                  ${errors[field.name]
-                    ? "border-red-500"
-                    : form[field.name]
-                    ? "border-green-500"
-                    : "border-gray-300"
+              {field.type === "select" ? (
+                <select
+                  value={form[field.name]}
+                  onChange={(e) =>
+                    handleChange(
+                      field.name,
+                      field.type === "number"
+                        ? Number(e.target.value)
+                        : e.target.value,
+                    )
                   }
+                >
+                  {field.options?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                // {field.options?.map(option => (
+                //   <option key={option} value={option}>
+                //     {option}
+                //   </option>
+                // ))}
+                <input
+                  type={field.type}
+                  value={form[field.name]}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  className={`
+                    border rounded p-2 outline-none
+                    ${
+                      errors[field.name]
+                        ? "border-red-500"
+                        : form[field.name]
+                          ? "border-green-500"
+                          : "border-gray-300 focus:border-blue-500 focus:border-2"
+                    }
+                  
                 `}
-              ></input>
-            )}
-            {errors[field.name] && (
-              <p className="text-red-500 text-sm">
-                {errors[field.name]}
+                ></input>
+              )}
+              <p className="text-red-500 text-sm min-h-5">
+                {errors[field.name] ?? ""}
               </p>
-            )}
-          </div>
-        ))}
-        <button
-          type="submit"
-          className="border font-semibold bg-blue-700 text-white"
-        >
-          Submit
-        </button>
+            </div>
+          ))}
+        </div>
+        <div className="w-full sticky bottom-0 bg-white pt-2 flex-row justify-center">
+          <button
+            type="submit"
+            className="w-full rounded border font-semibold bg-blue-700 text-white p-2"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   );

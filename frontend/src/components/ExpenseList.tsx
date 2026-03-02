@@ -14,12 +14,19 @@ export const ExpenseList = () => {
   if (error) return <p>Error loading expenses...</p>;
 
   return (
-    <ul>
-      {expenses.map((expense) => (
-        <li key={`${expense.type}-${expense.id}`}>
-          <ExpenseItem expense={expense} />
-        </li>
-      ))}
-    </ul>
+    <table className="w-full border-collapse">
+      <thead>
+        <th className="px-4 py-3">Date</th>
+        <th className="px-4 py-3">Type</th>
+        <th className="px-4 py-3">Title</th>
+        <th className="px-4 py-3">Amount</th>
+        <th className="px-4 py-3"></th>
+      </thead>
+      <tbody>
+        {expenses.map(expense => (
+          <ExpenseItem key={`${expense.type}-${expense.id}`} expense={expense} />
+        ))}
+      </tbody>
+    </table>
   );
 };
