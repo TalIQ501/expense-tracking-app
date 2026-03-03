@@ -3,7 +3,7 @@ import { summaryRepository } from "./summary.repository";
 import { summaryService } from "./summary.service";
 
 export const summaryRoutes: FastifyPluginAsync = async (
-  app: FastifyInstance
+  app: FastifyInstance,
 ) => {
   if (!app.db) {
     throw new Error("Database not initialised");

@@ -13,7 +13,7 @@ interface ExpenseStateType {
   fetchExpenses: () => Promise<void>;
   addExpense: <T extends ExpenseType>(
     type: ExpenseType,
-    data: FormState<T>
+    data: FormState<T>,
   ) => Promise<void>;
   deleteExpense: (type: ExpenseType, id: number) => Promise<void>;
 }
@@ -52,10 +52,10 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
         body: JSON.stringify(data),
       });
 
-      await get().fetchExpenses()
+      await get().fetchExpenses();
     } catch (err) {
       console.error("Failed to add expense", err);
-      set({ error: "Failed to add expense" })
+      set({ error: "Failed to add expense" });
     }
   },
 
@@ -65,10 +65,10 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
         method: "DELETE",
       });
 
-      await get().fetchExpenses()
+      await get().fetchExpenses();
     } catch (err) {
       console.error("Failed to delete expense", err);
-      set({ error: "Failed to delete expense" })
+      set({ error: "Failed to delete expense" });
     }
   },
 }));

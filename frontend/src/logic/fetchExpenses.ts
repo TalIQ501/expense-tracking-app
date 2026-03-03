@@ -5,7 +5,7 @@ import type { AnyExpenseType } from "../types/expense";
 export const fetchAllExpenses = async () => {
   const entries = Object.entries(EXPENSE_TYPES) as [
     ExpenseType,
-    { endpoint: string }
+    { endpoint: string },
   ][];
 
   const result = await Promise.all(
@@ -16,7 +16,7 @@ export const fetchAllExpenses = async () => {
         ...expense,
         type,
       }));
-    })
+    }),
   );
 
   return result.flat();

@@ -5,7 +5,7 @@ import { isError } from "../../utils/isError";
 import type { ClothesType } from "./clothes";
 
 export const clothesRoutes: FastifyPluginAsync = async (
-  app: FastifyInstance
+  app: FastifyInstance,
 ) => {
   if (!app.db) {
     throw new Error("Database not initialised");

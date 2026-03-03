@@ -11,7 +11,7 @@ export const api = async <T>(path: string, options?: ApiOptions) => {
     ? `?${new URLSearchParams(
         Object.entries(params)
           .filter(([, v]) => v !== undefined)
-          .map(([k, v]) => [k, String(v)])
+          .map(([k, v]) => [k, String(v)]),
       ).toString()}`
     : "";
 

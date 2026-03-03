@@ -6,7 +6,7 @@ export const summaryRepository = (db: Database) => {
     return db.prepare(getGeneralExpensesSumQuery).run();
   };
 
-  return { getSumOfDates }
+  return { getSumOfDates };
 };
 
 export type summaryRepository = ReturnType<typeof summaryRepository>;

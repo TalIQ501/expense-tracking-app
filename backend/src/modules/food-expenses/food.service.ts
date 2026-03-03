@@ -1,6 +1,5 @@
 import { foodRepository } from "./food.repository";
 import type { FoodType } from "./food";
-import { logger } from "../../plugins/loggerPlugin";
 
 export const foodService = (repo: foodRepository) => {
   const getAll = () => repo.findAll();
@@ -20,13 +19,9 @@ export const foodService = (repo: foodRepository) => {
   };
 
   const create = (data: FoodType) => {
-    logger.info('Service Layer');
-
     if (!data.item || data.amount <= 0) {
       throw new Error("Invalid food expense data");
     }
-
-    logger.info(data);
 
     return repo.create(data);
   };
@@ -53,7 +48,7 @@ export const foodService = (repo: foodRepository) => {
     const result = repo.remove(id);
 
     if (result.changes === 0) {
-      throw new Error("Food expense not found")
+      throw new Error("Food expense not found");
     }
   };
 

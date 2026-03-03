@@ -4,7 +4,9 @@ import { stationaryService } from "./stationary.service";
 import { isError } from "../../utils/isError";
 import type { StationaryType } from "./stationary";
 
-export const stationaryRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
+export const stationaryRoutes: FastifyPluginAsync = async (
+  app: FastifyInstance,
+) => {
   if (!app.db) {
     throw new Error("Database not initialised");
   }

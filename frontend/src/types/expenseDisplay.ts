@@ -34,7 +34,7 @@ export const expenseDisplayConfig: Record<ExpenseType, ExpenseDisplay> = {
     ...baseExpenseDisplay,
     title: (e) => `${e.quantity} ${e.item}`,
   },
-  stationary: { 
+  stationary: {
     ...baseExpenseDisplay,
     title: (e) => `${e.quantity} ${e.item}`,
   },

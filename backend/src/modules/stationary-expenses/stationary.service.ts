@@ -44,7 +44,7 @@ export const stationaryService = (repo: stationaryRepository) => {
     const result = repo.remove(id);
 
     if (result.changes === 0) {
-      throw new Error("Stationary expense not found")
+      throw new Error("Stationary expense not found");
     }
   };
 

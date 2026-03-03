@@ -4,7 +4,9 @@ import { transportService } from "./transport.service";
 import { isError } from "../../utils/isError";
 import type { TransportType } from "./transport";
 
-export const transportRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
+export const transportRoutes: FastifyPluginAsync = async (
+  app: FastifyInstance,
+) => {
   if (!app.db) {
     throw new Error("Database not initialised");
   }
