@@ -34,3 +34,14 @@ updated_at = CURRENT_TIMESTAMP
 
 WHERE id = ?
 `;
+
+export const getDeletedGeneralExpensesQuery = `
+SELECT * FROM general_expenses
+WHERE is_deleted = 1
+ORDER BY deleted_at DESC
+`
+
+export const permDeleteGeneralExpensesQuery = `
+DELETE FROM general_expenses
+WHERE id = @id
+`

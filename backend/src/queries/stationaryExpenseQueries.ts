@@ -36,3 +36,14 @@ updated_at = CURRENT_TIMESTAMP
 
 WHERE id = @id
 `;
+
+export const getDeletedStationaryExpensesQuery = `
+SELECT * FROM stationary_expenses
+WHERE is_deleted = 1
+ORDER BY deleted_at DESC
+`
+
+export const permDeleteStationaryExpensesQuery = `
+DELETE FROM stationary_expenses
+WHERE id = @id
+`

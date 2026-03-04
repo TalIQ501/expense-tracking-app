@@ -36,3 +36,14 @@ updated_at = CURRENT_TIMESTAMP
 
 WHERE id = @id
 `;
+
+export const getDeletedGroceryExpensesQuery = `
+SELECT * FROM grocery_expenses
+WHERE is_deleted = 1
+ORDER BY deleted_at DESC
+`
+
+export const permDeleteGroceryExpensesQuery = `
+DELETE FROM grocery_expenses
+WHERE id = @id
+`
