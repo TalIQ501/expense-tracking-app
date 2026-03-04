@@ -2,15 +2,24 @@ import { api } from "../api/client";
 import { EXPENSE_TYPES, type ExpenseType } from "../types/expenseTypes";
 import type { AnyExpenseType } from "../types/expense";
 
-export const fetchAllExpenses = async () => {
-  const entries = Object.entries(EXPENSE_TYPES) as [
-    ExpenseType,
-    { endpoint: string },
-  ][];
+type filtersType = {
+  type?: ExpenseType;
+  params?: Record<string, string | number | boolean>;
+};
 
-  const result = await Promise.all(
+export const fetchAllExpenses = async (filters?: filtersType) => {
+  const entries = filters?.type
+    ? ([[filters.type, EXPENSE_TYPES[filters.type]]] as [
+        ExpenseType,
+        { endpoint: string },
+      ][])
+    : (Object.entries(EXPENSE_TYPES) as [ExpenseType, { endpoint: string }][]);
+
+  const results = await Promise.allSettled(
     entries.map(async ([type, { endpoint }]) => {
-      const data = await api<AnyExpenseType[]>(endpoint);
+      const data = await api<AnyExpenseType[]>(endpoint, {
+        params: filters?.params,
+      });
 
       return data.map((expense: AnyExpenseType[]) => ({
         ...expense,
@@ -19,5 +28,16 @@ export const fetchAllExpenses = async () => {
     }),
   );
 
-  return result.flat();
+  const succeeded = results
+    .filter((r) => r.status === "fulfilled")
+    .map(
+      (r) =>
+        (
+          r as PromiseFulfilledResult<
+            (AnyExpenseType & { type: ExpenseType })[]
+          >
+        ).value,
+    );
+
+  return succeeded.flat();
 };
