@@ -16,11 +16,13 @@ export const ExpenseList = () => {
   return (
     <table className="w-full border-collapse">
       <thead>
-        <th className="px-4 py-3">Date</th>
-        <th className="px-4 py-3">Type</th>
-        <th className="px-4 py-3">Title</th>
-        <th className="px-4 py-3">Amount</th>
-        <th className="px-4 py-3"></th>
+        <tr>
+          <th className="px-4 py-3">Date</th>
+          <th className="px-4 py-3">Type</th>
+          <th className="px-4 py-3">Title</th>
+          <th className="px-4 py-3">Amount</th>
+          <th className="px-4 py-3"></th>
+        </tr>
       </thead>
       <tbody>
         {expenses.map((expense) => (

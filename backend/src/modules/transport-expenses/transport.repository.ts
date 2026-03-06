@@ -5,6 +5,9 @@ import {
   createTransportExpensesQuery,
   deleteTransportExpensesQuery,
   updateTransportExpensesQuery,
+  getDeletedTransportExpensesQuery,
+  permaDeleteTransportExpensesQuery,
+  getDeletedTransportExpenseByIdQuery,
 } from "../../queries/transportExpenseQueries";
 import type { TransportType } from "./transport";
 
@@ -58,7 +61,33 @@ export const transportRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedTransportExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedTransportExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedTransportExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteTransportExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type transportRepository = ReturnType<typeof transportRepository>;

@@ -39,9 +39,16 @@ export const getDeletedGeneralExpensesQuery = `
 SELECT * FROM general_expenses
 WHERE is_deleted = 1
 ORDER BY deleted_at DESC
-`
+`;
 
-export const permDeleteGeneralExpensesQuery = `
+export const getDeletedGeneralExpenseByIdQuery = `
+SELECT * FROM general_expenses
+WHERE is_deleted = 1
+AND id = @id
+`;
+
+export const permaDeleteGeneralExpensesQuery = `
 DELETE FROM general_expenses
 WHERE id = @id
-`
+AND is_deleted = 1
+`;

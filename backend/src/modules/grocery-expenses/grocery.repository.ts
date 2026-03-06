@@ -5,6 +5,9 @@ import {
   createGroceryExpensesQuery,
   deleteGroceryExpensesQuery,
   updateGroceryExpensesQuery,
+  permaDeleteGroceryExpensesQuery,
+  getDeletedGroceryExpensesQuery,
+  getDeletedGroceryExpenseByIdQuery,
 } from "../../queries/groceryExpenseQueries";
 import type { GroceryType } from "./grocery";
 
@@ -58,7 +61,33 @@ export const groceryRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedGroceryExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedGroceryExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedGroceryExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteGroceryExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type groceryRepository = ReturnType<typeof groceryRepository>;

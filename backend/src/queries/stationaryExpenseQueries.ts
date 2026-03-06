@@ -41,9 +41,17 @@ export const getDeletedStationaryExpensesQuery = `
 SELECT * FROM stationary_expenses
 WHERE is_deleted = 1
 ORDER BY deleted_at DESC
-`
+AND id = @id
+`;
 
-export const permDeleteStationaryExpensesQuery = `
+export const getDeletedStationaryExpenseByIdQuery = `
+SELECT * FROM stationary_expenses
+WHERE is_deleted = 1
+AND id = @id
+`;
+
+export const permaDeleteStationaryExpensesQuery = `
 DELETE FROM stationary_expenses
 WHERE id = @id
-`
+AND is_deleted = 1
+`;

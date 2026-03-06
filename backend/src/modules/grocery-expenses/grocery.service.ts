@@ -48,5 +48,42 @@ export const groceryService = (repo: groceryRepository) => {
     }
   };
 
-  return { getAll, getById, create, update, remove };
+  const getDelAll = () => repo.findDelAll();
+
+  const getDelById = (id: number) => {
+    if (!Number.isInteger(id)) {
+      throw new Error("Invalid Query ID");
+    }
+
+    const deleted = repo.findDelById(id);
+
+    if (!deleted) {
+      throw new Error("Record not deleted or does not exist");
+    }
+
+    return deleted;
+  };
+
+  const permaDelete = (id: number) => {
+    if (!Number.isInteger(id)) {
+      throw new Error("Invalid grocery expenses ID");
+    }
+
+    const result = repo.permaDelete(id);
+
+    if (result.changes === 0) {
+      throw new Error("Grocery expense not found");
+    }
+  };
+
+  return {
+    getAll,
+    getById,
+    create,
+    update,
+    remove,
+    getDelAll,
+    getDelById,
+    permaDelete,
+  };
 };

@@ -5,6 +5,9 @@ import {
   createGeneralExpensesQuery,
   deleteGeneralExpensesQuery,
   updateGeneralExpensesQuery,
+  getDeletedGeneralExpensesQuery,
+  permaDeleteGeneralExpensesQuery,
+  getDeletedGeneralExpenseByIdQuery,
 } from "../../queries/generalExpenseQueries";
 import type { GeneralExpenseType } from "./general";
 
@@ -54,7 +57,33 @@ export const generalExpenseRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedGeneralExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedGeneralExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedGeneralExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteGeneralExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type generalExpenseRepository = ReturnType<

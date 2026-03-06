@@ -41,9 +41,16 @@ export const getDeletedFoodExpensesQuery = `
 SELECT * FROM food_expenses
 WHERE is_deleted = 1
 ORDER BY deleted_at DESC
-`
+`;
 
-export const permDeleteFoodExpensesQuery = `
+export const getDeletedFoodExpenseByIdQuery = `
+SELECT * FROM food_expenses
+WHERE is_deleted = 1
+AND id = @id
+`;
+
+export const permaDeleteFoodExpensesQuery = `
 DELETE FROM food_expenses
 WHERE id = @id
-`
+AND is_deleted = 1
+`;

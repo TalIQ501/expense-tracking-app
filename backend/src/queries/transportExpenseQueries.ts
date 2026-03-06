@@ -36,13 +36,20 @@ updated_at = CURRENT_TIMESTAMP
 WHERE id = @id
 `;
 
-export const getTransportExpensesDeletedQuery = `
+export const getDeletedTransportExpensesQuery = `
 SELECT * FROM transport_expenses
 WHERE is_deleted = 1
 ORDER BY deleted_at DESC
-`
+`;
 
-export const permDeleteTransportExpensesQuery = `
+export const getDeletedTransportExpenseByIdQuery = `
+SELECT * FROM transport_expenses
+WHERE is_deleted = 1
+AND id = @id
+`;
+
+export const permaDeleteTransportExpensesQuery = `
 DELETE FROM transport_expenses
 WHERE id = @id
-`
+AND is_deleted = 1
+`;

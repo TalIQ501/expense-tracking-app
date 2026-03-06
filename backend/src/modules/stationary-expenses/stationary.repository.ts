@@ -5,6 +5,9 @@ import {
   createStationaryExpensesQuery,
   deleteStationaryExpensesQuery,
   updateStationaryExpensesQuery,
+  getDeletedStationaryExpensesQuery,
+  permaDeleteStationaryExpensesQuery,
+  getDeletedStationaryExpenseByIdQuery,
 } from "../../queries/stationaryExpenseQueries";
 import type { StationaryType } from "./stationary";
 
@@ -58,7 +61,33 @@ export const stationaryRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedStationaryExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedStationaryExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedStationaryExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteStationaryExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type stationaryRepository = ReturnType<typeof stationaryRepository>;

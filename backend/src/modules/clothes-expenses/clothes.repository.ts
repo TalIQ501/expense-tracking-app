@@ -5,6 +5,9 @@ import {
   createClothesExpensesQuery,
   updateClothesExpensesQuery,
   deleteClothesExpensesQuery,
+  getDeletedClothesExpensesQuery,
+  permaDeleteClothesExpensesQuery,
+  getDeletedClothesExpenseByIdQuery,
 } from "../../queries/clothesExpenseQueries";
 import type { ClothesType } from "./clothes";
 
@@ -58,7 +61,33 @@ export const clothesRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedClothesExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedClothesExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedClothesExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteClothesExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type clothesRepository = ReturnType<typeof clothesRepository>;

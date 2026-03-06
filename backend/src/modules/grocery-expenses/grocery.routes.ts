@@ -77,4 +77,22 @@ export const groceryRoutes: FastifyPluginAsync = async (
       return;
     }
   });
+
+  app.get("/deleted", async () => {
+    return service.getDelAll();
+  });
+
+  app.delete("/deleted/:id", async (req, reply) => {
+    try {
+      const { id } = req.params as { id: string };
+      service.permaDelete(Number(id));
+      return { success: true };
+    } catch (err) {
+      if (isError(err)) {
+        reply.code(404).send({ message: err.message });
+      }
+
+      return;
+    }
+  });
 };

@@ -5,6 +5,9 @@ import {
   createFoodExpensesQuery,
   deleteFoodExpensesQuery,
   updateFoodExpensesQuery,
+  getDeletedFoodExpensesQuery,
+  permaDeleteFoodExpensesQuery,
+  getDeletedFoodExpenseByIdQuery,
 } from "../../queries/foodExpenseQueries";
 import type { FoodType } from "./food";
 
@@ -56,7 +59,33 @@ export const foodRepository = (db: Database) => {
     return info.changes;
   };
 
-  return { findAll, findById, create, remove, update };
+  const findDelAll = () => {
+    return db.prepare(getDeletedFoodExpensesQuery).all();
+  };
+
+  const findDelById = (id: number) => {
+    return db.prepare(getDeletedFoodExpenseByIdQuery).get(id);
+  };
+
+  const permaDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedFoodExpenseByIdQuery).get(id);
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(permaDeleteFoodExpensesQuery).run(id);
+  };
+
+  return {
+    findAll,
+    findById,
+    create,
+    remove,
+    update,
+    findDelAll,
+    findDelById,
+    permaDelete,
+  };
 };
 
 export type foodRepository = ReturnType<typeof foodRepository>;
