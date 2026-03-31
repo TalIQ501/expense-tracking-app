@@ -66,10 +66,19 @@ export interface IClothesFilters {
   store?: string;
 }
 
-export type IAllFilters = IExpenseFilters &
+export interface ISortFilters {
+  sort_desc?: boolean;
+  sort_date?: boolean;
+  sort_type?: boolean;
+  sort_deleted_at?: boolean;
+}
+
+export type IAllConditionFilters = IExpenseFilters &
   IGeneralFilters &
   IFoodFilters &
   ITRansportFilters &
   IGroceryFilters &
   IStationaryFilters &
   IClothesFilters;
+
+export type IAllFilters = ISortFilters & IAllConditionFilters

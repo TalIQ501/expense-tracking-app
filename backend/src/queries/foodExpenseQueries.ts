@@ -11,7 +11,7 @@ SELECT * FROM food_expenses WHERE id = ?;
 export const createFoodExpensesQuery = `
 INSERT INTO food_expenses 
 (expense_id, item, quantity, outlet, area, address)
-VALUES (@expense_id, @item, @outlet, @quantity, @area, @address);
+VALUES (@expense_id, @item, @quantity, @outlet, @area, @address);
 `;
 
 export const deleteFoodExpensesQuery = `

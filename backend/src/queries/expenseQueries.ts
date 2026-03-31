@@ -11,8 +11,8 @@ WHERE id = @id
 
 export const createExpenseQuery = `
 INSERT INTO expenses
-(expense_date, amount, category_id, rating)
-VALUES (@expense_date, @amount, @category_id, @rating);
+(expense_date, amount, type_id, rating)
+VALUES (@expense_date, @amount, @type_id, @rating);
 `;
 
 export const removeExpenseQuery = `

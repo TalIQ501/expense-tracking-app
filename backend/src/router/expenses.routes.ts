@@ -2,8 +2,11 @@ import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { expenseRepository } from "../repo/expenses.repository";
 import { isError } from "../utils/isError";
 import { logger } from "../plugins/loggerPlugin";
-import type { IExpenseFilters, IPageFilters } from "../types/queryFilters";
-import type { IExpenseRequestBody } from "../types/api";
+import type {
+  IExpenseFilters,
+  IPageFilters,
+} from "../../../shared/types/queryFilters";
+import type { IExpenseRequestBody } from "../../../shared/types/request";
 
 export const expenseRouter: FastifyPluginAsync = async (
   app: FastifyInstance,

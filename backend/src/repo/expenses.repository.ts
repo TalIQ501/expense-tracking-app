@@ -3,7 +3,7 @@ import type {
   IAllFilters,
   IExpenseFilters,
   IPageFilters,
-} from "../types/queryFilters";
+} from "../../../shared/types/queryFilters";
 import {
   createExpenseQuery,
   deleteExpenseQuery,
@@ -11,14 +11,18 @@ import {
   getExpenseByIdQuery,
   removeExpenseQuery,
 } from "../queries/expenseQueries";
-import type { IExpense } from "../types/expense";
+import type { IExpense } from "../../../shared/types/expense";
 import {
   allFilterConditionMap,
   createQueryMap,
 } from "../config/expenseConditionBuilder";
 import { logger } from "../plugins/loggerPlugin";
 import { isError } from "../utils/isError";
-import type { IExpenseRequestBody, ExpenseRequestTypes } from "../types/api";
+import type {
+  IExpenseRequestBody,
+  ExpenseRequestTypes,
+} from "../../../shared/types/request";
+import { parseExpenseMap } from "../config/parseExpenseData";
 
 export const expenseRepository = (db: Database) => {
   const buildFilters = (
@@ -26,7 +30,16 @@ export const expenseRepository = (db: Database) => {
     pageFilters?: IPageFilters,
     conditionMap: typeof allFilterConditionMap = allFilterConditionMap,
   ) => {
+    const orderByMap = {
+      sort_date: "e.expense_date",
+      sort_type: "expense_type",
+    } as const;
+
+    type sortType = (typeof orderByMap)[keyof typeof orderByMap];
+    let sortDesc: boolean = true;
+
     const conditions: string[] = [];
+    let sort: sortType = "e.expense_date";
     const params: Record<string, unknown> = {};
 
     if (filters?.deleted) {
@@ -38,6 +51,8 @@ export const expenseRepository = (db: Database) => {
     Object.entries(filters ?? {}).forEach(([key, value]) => {
       if (value === undefined || value === null || key === "deleted") return;
 
+      sortDesc = filters?.sort_desc ? true : false;
+
       const condition = conditionMap[key as keyof typeof allFilterConditionMap];
       if (!condition) return;
 
@@ -48,7 +63,7 @@ export const expenseRepository = (db: Database) => {
     const offset =
       ((pageFilters?.page ?? 1) - 1) * (pageFilters?.pageSize ?? 20);
 
-    return { conditions, params, offset };
+    return { conditions, params, offset, sort, sortDesc };
   };
 
   const selectTable = (type_id: number): ExpenseRequestTypes => {
@@ -67,16 +82,22 @@ export const expenseRepository = (db: Database) => {
 
   const getAll = (filters?: IExpenseFilters, pageFilters?: IPageFilters) => {
     try {
-      const { conditions, params, offset } = buildFilters(filters, pageFilters);
+      const { conditions, params, offset, sort, sortDesc } = buildFilters(
+        filters,
+        pageFilters,
+      );
 
       const getAllQuery = `
         SELECT 
         e.id, e.expense_date, e.amount, e.type_id, e.rating, e.recorded_at, e.last_updated_at, e.deleted_at, 
-        c.name as category,
-        gen.purpose, gen.description, gen.given_to, gen.address,
-        f.item, f.quantity, f.outlet, f.area, f.address,
+        c.name as expense_type,
+        gen.purpose, gen.description, gen.given_to,
+        f.outlet, f.area,
         t.mode, t.origin, t.origin_region, t.destination, t.destination_region, t.service_name,
-        gr.item, gr.quantity, gr.category
+        COALESCE(gen.address, f.address) as address,
+        COALESCE(f.item, gr.item, s.item, clo.item) as item,
+        COALESCE(f.quantity, gr.quantity, s.quantity, clo.quantity) as quantity,
+        COALESCE(gr.category, s.category, clo.category) as category
         FROM expenses e
         JOIN expense_types c ON e.type_id = c.id
         LEFT JOIN general_expenses gen ON gen.expense_id = e.id
@@ -86,7 +107,7 @@ export const expenseRepository = (db: Database) => {
         LEFT JOIN stationary_expenses s ON s.expense_id = e.id
         LEFT JOIN clothes_expenses clo ON clo.expense_id = e.id
         WHERE ${conditions.join(" AND ")}
-        ORDER BY e.expense_date DESC
+        ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
         LIMIT @pageSize OFFSET @offset
       `;
 
@@ -126,9 +147,12 @@ export const expenseRepository = (db: Database) => {
 
         const createQuery = getCreateQuery(type);
 
+        const parseFn = parseExpenseMap[type];
+        const parsedData = parseFn(extraData);
+
         db.prepare(createQuery).run({
           expense_id: expenseEntry.lastInsertRowid,
-          ...extraData,
+          ...parsedData,
         });
       },
     );
