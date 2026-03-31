@@ -18,6 +18,7 @@ const transportValidator = (data: Record<string, unknown>) => ({
   origin: data.origin,
   origin_region: data.origin_region,
   destination: data.destination,
+  destination_region: data.destination_region,
   service_name: data.service_name,
 });
 
