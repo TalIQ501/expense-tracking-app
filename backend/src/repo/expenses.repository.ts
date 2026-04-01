@@ -6,10 +6,10 @@ import type {
 } from "../../../shared/types/queryFilters";
 import {
   createExpenseQuery,
-  deleteExpenseQuery,
+  hardDeleteExpenseQuery,
   getDeletedExpenseByIdQuery,
   getExpenseByIdQuery,
-  removeExpenseQuery,
+  softDeleteExpenseQuery,
 } from "../queries/expenseQueries";
 import type { IExpense } from "../../../shared/types/expense";
 import {
@@ -161,7 +161,7 @@ export const expenseRepository = (db: Database) => {
   };
 
   const remove = (id: number) => {
-    return db.prepare(removeExpenseQuery).run({ id });
+    return db.prepare(softDeleteExpenseQuery).run({ id });
   };
 
   const update = (expense: IExpense) => {};
@@ -172,7 +172,7 @@ export const expenseRepository = (db: Database) => {
     if (!deleted)
       throw new Error("Record not deleted before or does not exist");
 
-    return db.prepare(deleteExpenseQuery).run({ id });
+    return db.prepare(hardDeleteExpenseQuery).run({ id });
   };
 
   return { getAll, getById, create, remove, update, hardDelete };

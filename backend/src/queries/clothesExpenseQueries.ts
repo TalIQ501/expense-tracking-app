@@ -2,7 +2,8 @@ export const getClothesExpensesQuery = `
 SELECT * FROM clothes_expenses 
 WHERE is_deleted = 0
 ORDER BY expense_date DESC
-;`;
+;
+`;
 
 export const getClothesExpensesByIdQuery = `
 SELECT * FROM clothes_expenses WHERE id = ?;
@@ -12,13 +13,6 @@ export const createClothesExpensesQuery = `
 INSERT INTO clothes_expenses 
 (expense_id, item, quantity, category, brand, store, address)
 VALUES (@expense_id, @item, @quantity, @category, @brand, @store, @address);
-`;
-
-export const deleteClothesExpensesQuery = `
-UPDATE clothes_expenses SET
-is_deleted = 1,
-deleted_at = CURRENT_TIMESTAMP
-WHERE id = ?
 `;
 
 export const updateClothesExpensesQuery = `
@@ -35,22 +29,4 @@ rating = @rating,
 updated_at = CURRENT_TIMESTAMP
 
 WHERE id = @id
-`;
-
-export const getDeletedClothesExpensesQuery = `
-SELECT * FROM clothes_expenses
-WHERE is_deleted = 1
-ORDER BY deleted_at DESC
-`;
-
-export const getDeletedClothesExpenseByIdQuery = `
-SELECT * FROM clothes_expenses
-WHERE is_deleted = 1
-AND id = @id
-`;
-
-export const permaDeleteClothesExpensesQuery = `
-DELETE FROM clothes_expenses
-WHERE id = @id
-AND is_deleted = 1
 `;

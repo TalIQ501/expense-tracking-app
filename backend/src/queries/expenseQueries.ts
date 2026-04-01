@@ -1,11 +1,11 @@
 export const getExpensesQuery = `
-SELECT * FROM expenses
+SELECT id, expense_date, amount, type_id, rating
 WHERE is_deleted IS NULL
-ORDER BY expense_date DESC;
 `;
 
 export const getExpenseByIdQuery = `
-SELECT * FROM expenses
+SELECT id, expense_date, amount, type_id, rating
+FROM expenses
 WHERE id = @id
 `;
 
@@ -15,7 +15,7 @@ INSERT INTO expenses
 VALUES (@expense_date, @amount, @type_id, @rating);
 `;
 
-export const removeExpenseQuery = `
+export const softDeleteExpenseQuery = `
 UPDATE expenses SET
 deleted_at = CURRENT_TIMESTAMP
 WHERE id = @id
@@ -38,6 +38,6 @@ SELECT * FROM expenses
 WHERE id = @id
 AND deleted_at IS NOT NULL
 `;
-export const deleteExpenseQuery = `
+export const hardDeleteExpenseQuery = `
 
 `;

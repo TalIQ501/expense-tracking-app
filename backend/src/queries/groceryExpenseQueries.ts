@@ -14,13 +14,6 @@ INSERT INTO grocery_expenses
 VALUES (@expense_id, @item, @quantity, @category, @brand, @store, @address);
 `;
 
-export const deleteGroceryExpensesQuery = `
-UPDATE grocery_expenses SET
-is_deleted = 1,
-deleted_at = CURRENT_TIMESTAMP
-WHERE id = ?
-`;
-
 export const updateGroceryExpensesQuery = `
 UPDATE grocery_expenses SET 
 expense_date = @expense_date,
