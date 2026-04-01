@@ -2,7 +2,7 @@ export interface IExpense {
   id: number;
   expense_date: string;
   amount: string;
-  category_id: number;
+  type_id: number;
   recorded_at: string;
   deleted_at?: string;
   rating?: number;
@@ -75,3 +75,5 @@ export interface ExpenseTypeMap {
 }
 
 export type ExpenseTypes = keyof ExpenseTypeMap;
+
+export type IExpenseTypes = IGeneralExpense | IFoodExpense | ITransportExpense | IGroceryExpense | IStationaryExpense | IClothesExpense
