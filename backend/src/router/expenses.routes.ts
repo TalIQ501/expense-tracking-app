@@ -74,4 +74,18 @@ export const expenseRouter: FastifyPluginAsync = async (
       return reply.code(500).send({ message: "Server Error" });
     }
   });
+
+  app.delete("/:id", async (req, reply) => {
+    try {
+      const { id } = req.params as { id: string };
+      return repo.softDelete(Number(id));
+    } catch (ex) {
+      if (isError(ex)) {
+        logger.error(ex.message);
+        return reply.code(404).send({ message: ex.message });
+      }
+      logger.error(ex);
+      return reply.code(500).send({ message: "Server Error" });
+    }
+  })
 };

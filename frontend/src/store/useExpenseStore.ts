@@ -12,7 +12,7 @@ interface ExpenseStateType {
   error: string | null;
   fetchExpenses: (filters?: IAllConditionFilters) => Promise<void>;
   addExpense: <T extends ExpenseType>(data: FormState<T>) => Promise<void>;
-  deleteExpense: (type: ExpenseType, id: number) => Promise<void>;
+  deleteExpense: (id: number) => Promise<void>;
 }
 
 export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
@@ -59,7 +59,7 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
 
   deleteExpense: async (id) => {
     try {
-      await api(`/${id}`, {
+      await api(`/expenses/${id}`, {
         method: "DELETE",
       });
 

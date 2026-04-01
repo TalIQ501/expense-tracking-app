@@ -21,7 +21,7 @@ export const ExpenseItem = ({ expense }: ExpenseItemProps) => {
         <button
           className="border-2 text-red-500 hover:bg-red-50 border-red-200 px-2"
           onClick={() =>
-            deleteExpense(config.type(expense), config.id(expense))
+            deleteExpense(config.id(expense))
           }
         >
           Del
