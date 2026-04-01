@@ -1,13 +1,10 @@
-export const getClothesExpensesQuery = `
-SELECT * FROM clothes_expenses 
-WHERE is_deleted = 0
-ORDER BY expense_date DESC
-;
-`;
+export const clothesColumnsString = `
+clo.item, clo.quantity, clo.category, clo.brand, clo.brand, clo.address
+`
 
-export const getClothesExpensesByIdQuery = `
-SELECT * FROM clothes_expenses WHERE id = ?;
-`;
+export const clothesJoinString = `
+LEFT JOIN clothes_expenses c ON clo.expense_id = e.id
+`
 
 export const createClothesExpensesQuery = `
 INSERT INTO clothes_expenses 

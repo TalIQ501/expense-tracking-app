@@ -8,13 +8,16 @@ import {
   createExpenseQuery,
   hardDeleteExpenseQuery,
   getDeletedExpenseByIdQuery,
-  getExpenseByIdQuery,
   softDeleteExpenseQuery,
+  expensesColumnsString,
+  expensesFromString,
+  typeNameQuery,
 } from "../queries/expenseQueries";
 import type { IExpense } from "../../../shared/types/expense";
 import {
   allFilterConditionMap,
   createQueryMap,
+  getDetailsQueryMap,
 } from "../config/expenseConditionBuilder";
 import { logger } from "../plugins/loggerPlugin";
 import { isError } from "../utils/isError";
@@ -23,6 +26,10 @@ import type {
   ExpenseRequestTypes,
 } from "../../../shared/types/request";
 import { parseExpenseMap } from "../config/parseExpenseData";
+
+interface TypeIdRes {
+  type_id: number
+}
 
 export const expenseRepository = (db: Database) => {
   const buildFilters = (
@@ -67,11 +74,7 @@ export const expenseRepository = (db: Database) => {
   };
 
   const selectTable = (type_id: number): ExpenseRequestTypes => {
-    const query = `
-      SELECT name 
-      FROM expense_types
-      WHERE id = @type_id
-    `;
+    const query = typeNameQuery;
 
     const result = db.prepare(query).get({ type_id }) as {
       name: ExpenseRequestTypes;
@@ -128,7 +131,42 @@ export const expenseRepository = (db: Database) => {
   };
 
   const getById = (id: number) => {
-    return db.prepare(getExpenseByIdQuery).get({ id });
+    try {
+      const typeIdRaw = db.prepare(`
+        SELECT type_id FROM expenses WHERE id = @id
+      `).get({ id }) as TypeIdRes;
+
+      const typeId = Number(typeIdRaw.type_id);
+
+      const type = selectTable(typeId);
+
+      const getDetailsQueries = (type: ExpenseRequestTypes) =>
+        getDetailsQueryMap[type];
+
+      const detailsQueries = getDetailsQueries(type);
+
+      const query = `
+        SELECT ${expensesColumnsString},
+        ${detailsQueries.columns}
+        ${expensesFromString}
+        ${detailsQueries.join}
+        WHERE e.id = @id
+      `
+      
+      const expense = db.prepare(query).get({ id })
+
+      if (!expense) {
+        throw new Error("Could not find record");
+      }
+
+      return expense;
+    } catch (ex) {
+      if (isError(ex)) {
+        logger.error(ex.message);
+      }
+
+      logger.error("Server Error");
+    }
   };
 
   const create = (
@@ -160,7 +198,7 @@ export const expenseRepository = (db: Database) => {
     return createTransaction(expense, extraData);
   };
 
-  const remove = (id: number) => {
+  const softDelete = (id: number) => {
     return db.prepare(softDeleteExpenseQuery).run({ id });
   };
 
@@ -175,5 +213,5 @@ export const expenseRepository = (db: Database) => {
     return db.prepare(hardDeleteExpenseQuery).run({ id });
   };
 
-  return { getAll, getById, create, remove, update, hardDelete };
+  return { getAll, getById, create, softDelete, update, hardDelete };
 };

@@ -1,12 +1,10 @@
-export const getGroceryExpensesQuery = `
-SELECT * FROM grocery_expenses
-WHERE is_deleted <> 1
-ORDER BY expense_date DESC
-;`;
+export const groceryColumnsString = `
+gr.item, gr.quantity, gr.category, gr.brand, gr.store, gr.address
+`
 
-export const getGroceryExpensesByIdQuery = `
-SELECT * FROM grocery_expenses WHERE id = ?;
-`;
+export const groceryJoinString = `
+LEFT JOIN grocery_expenses gr ON gr.expense_id = e.id
+`
 
 export const createGroceryExpensesQuery = `
 INSERT INTO grocery_expenses 

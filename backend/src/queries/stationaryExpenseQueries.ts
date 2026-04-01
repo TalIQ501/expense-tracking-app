@@ -1,12 +1,10 @@
-export const getStationaryExpensesQuery = `
-SELECT * FROM stationary_expenses
-WHERE is_deleted <> 1
-ORDER BY expense_date DESC
-;`;
+export const stationaryColumnsString = `
+s.item, s.quantity, s.category, s.brand, s.store, s.address
+`
 
-export const getStationaryExpensesByIdQuery = `
-SELECT * FROM stationary_expenses WHERE id = @id;
-`;
+export const stationaryJoinString = `
+LEFT JOIN stationary_expenses s ON s.expense_id = e.id
+`
 
 export const createStationaryExpensesQuery = `
 INSERT INTO stationary_expenses 

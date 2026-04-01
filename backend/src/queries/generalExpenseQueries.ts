@@ -1,12 +1,10 @@
-export const getGeneralExpensesQuery = `
-SELECT * FROM general_expenses 
-WHERE is_deleted <> 1
-ORDER BY expense_date DESC
-;`;
+export const generalColumnsString = `
+gen.purpose, gen.description, gen.given_to, gen.address
+`
 
-export const getGeneralExpensesByIdQuery = `
-SELECT * FROM general_expenses WHERE id = ?;
-`;
+export const generalJoinString = `
+LEFT JOIN general_expenses gen ON gen.expense_id = e.id
+`
 
 export const createGeneralExpensesQuery = `
 INSERT INTO general_expenses 

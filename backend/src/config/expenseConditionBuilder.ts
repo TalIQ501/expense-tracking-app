@@ -1,9 +1,33 @@
-import { createClothesExpensesQuery } from "../queries/clothesExpenseQueries";
-import { createFoodExpensesQuery } from "../queries/foodExpenseQueries";
-import { createGeneralExpensesQuery } from "../queries/generalExpenseQueries";
-import { createGroceryExpensesQuery } from "../queries/groceryExpenseQueries";
-import { createStationaryExpensesQuery } from "../queries/stationaryExpenseQueries";
-import { createTransportExpensesQuery } from "../queries/transportExpenseQueries";
+import {
+  clothesColumnsString,
+  clothesJoinString,
+  createClothesExpensesQuery,
+} from "../queries/clothesExpenseQueries";
+import {
+  createFoodExpensesQuery,
+  foodColumnsString,
+  foodJoinString,
+} from "../queries/foodExpenseQueries";
+import {
+  createGeneralExpensesQuery,
+  generalColumnsString,
+  generalJoinString,
+} from "../queries/generalExpenseQueries";
+import {
+  createGroceryExpensesQuery,
+  groceryColumnsString,
+  groceryJoinString,
+} from "../queries/groceryExpenseQueries";
+import {
+  createStationaryExpensesQuery,
+  stationaryColumnsString,
+  stationaryJoinString,
+} from "../queries/stationaryExpenseQueries";
+import {
+  createTransportExpensesQuery,
+  transportColumnsString,
+  transportJoinString,
+} from "../queries/transportExpenseQueries";
 
 export const expenseFilterConditionMap = {
   deleted: "e.deleted = @deleted",
@@ -30,6 +54,33 @@ export const createQueryMap = {
   grocery: createGroceryExpensesQuery,
   stationary: createStationaryExpensesQuery,
   clothes: createClothesExpensesQuery,
+};
+
+export const getDetailsQueryMap = {
+  general: {
+    columns: generalColumnsString,
+    join: generalJoinString,
+  },
+  food: {
+    columns: foodColumnsString,
+    join: foodJoinString,
+  },
+  transport: {
+    columns: transportColumnsString,
+    join: transportJoinString,
+  },
+  grocery: {
+    columns: groceryColumnsString,
+    join: groceryJoinString,
+  },
+  stationary: {
+    columns: stationaryColumnsString,
+    join: stationaryJoinString,
+  },
+  clothes: {
+    columns: clothesColumnsString,
+    join: clothesJoinString,
+  },
 };
 
 export const generalFilterConditionMap = {

@@ -1,6 +1,15 @@
-export const getExpensesQuery = `
-SELECT id, expense_date, amount, type_id, rating
-WHERE is_deleted IS NULL
+export const expensesColumnsString = `
+e.id, e.expense_date, e.amount, e.type_id, e.rating
+`;
+
+export const expensesFromString = `
+FROM expenses e
+`
+
+export const typeNameQuery = `
+SELECT name 
+FROM expense_types
+WHERE id = @type_id
 `;
 
 export const getExpenseByIdQuery = `

@@ -1,11 +1,10 @@
-export const getTransportExpensesQuery = `
-SELECT * FROM transport_expenses
-ORDER BY expense_date DESC
-;`;
+export const transportColumnsString = `
+t.mode, t.origin, t.origin_region, t.destination, t.destination_region, t.service_name
+`
 
-export const getTransportExpensesByIdQuery = `
-SELECT * FROM transport_expenses WHERE id = ?;
-`;
+export const transportJoinString = `
+LEFT JOIN transport_expenses t ON t.expense_id = e.id
+`
 
 export const createTransportExpensesQuery = `
 INSERT INTO transport_expenses 
