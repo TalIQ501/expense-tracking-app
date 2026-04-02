@@ -1,10 +1,10 @@
 export const foodColumnsString = `
 f.item, f.quantity, f.outlet, f.area, f.address
-`
+`;
 
 export const foodJoinString = `
 LEFT JOIN food_expenses f ON f.expense_id = e.id
-`
+`;
 
 export const createFoodExpensesQuery = `
 INSERT INTO food_expenses 

@@ -4,7 +4,7 @@ e.id, e.expense_date, e.amount, e.type_id, e.rating
 
 export const expensesFromString = `
 FROM expenses e
-`
+`;
 
 export const typeNameQuery = `
 SELECT name 

@@ -87,5 +87,5 @@ export const expenseRouter: FastifyPluginAsync = async (
       logger.error(ex);
       return reply.code(500).send({ message: "Server Error" });
     }
-  })
+  });
 };

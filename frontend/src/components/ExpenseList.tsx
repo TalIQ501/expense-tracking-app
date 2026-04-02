@@ -26,10 +26,7 @@ export const ExpenseList = () => {
       </thead>
       <tbody>
         {expenses.map((expense) => (
-          <ExpenseItem
-            key={`${expense.id}`}
-            expense={expense}
-          />
+          <ExpenseItem key={`${expense.id}`} expense={expense} />
         ))}
       </tbody>
     </table>

@@ -1,10 +1,10 @@
 export const groceryColumnsString = `
 gr.item, gr.quantity, gr.category, gr.brand, gr.store, gr.address
-`
+`;
 
 export const groceryJoinString = `
 LEFT JOIN grocery_expenses gr ON gr.expense_id = e.id
-`
+`;
 
 export const createGroceryExpensesQuery = `
 INSERT INTO grocery_expenses 
@@ -27,4 +27,3 @@ updated_at = CURRENT_TIMESTAMP
 
 WHERE id = @id
 `;
-

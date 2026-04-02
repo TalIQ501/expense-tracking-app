@@ -20,9 +20,7 @@ export const ExpenseItem = ({ expense }: ExpenseItemProps) => {
       <td className="px-4 py-3">
         <button
           className="border-2 text-red-500 hover:bg-red-50 border-red-200 px-2"
-          onClick={() =>
-            deleteExpense(config.id(expense))
-          }
+          onClick={() => deleteExpense(config.id(expense))}
         >
           Del
         </button>

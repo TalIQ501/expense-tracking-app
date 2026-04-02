@@ -26,7 +26,9 @@ export const useExpenseStore = create<ExpenseStateType>((set, get) => ({
     set({ loading: true, error: null });
 
     try {
-      const data = await api("/expenses", { params: filters as QueryParams }) as AnyExpenseType[];
+      const data = (await api("/expenses", {
+        params: filters as QueryParams,
+      })) as AnyExpenseType[];
       set({ expenses: data, loading: false });
       console.log(get().expenses);
     } catch (err) {

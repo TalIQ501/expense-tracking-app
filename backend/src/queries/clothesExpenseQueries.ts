@@ -1,10 +1,10 @@
 export const clothesColumnsString = `
 clo.item, clo.quantity, clo.category, clo.brand, clo.brand, clo.address
-`
+`;
 
 export const clothesJoinString = `
 LEFT JOIN clothes_expenses c ON clo.expense_id = e.id
-`
+`;
 
 export const createClothesExpensesQuery = `
 INSERT INTO clothes_expenses 

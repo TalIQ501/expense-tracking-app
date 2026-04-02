@@ -84,7 +84,7 @@ export const AddExpenseForm = () => {
       return;
     }
 
-    addExpense({ ...form, type_id: typeId});
+    addExpense({ ...form, type_id: typeId });
     setForm(initialState);
     setErrors({});
   };

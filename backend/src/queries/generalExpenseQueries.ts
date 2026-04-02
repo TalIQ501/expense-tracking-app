@@ -1,10 +1,10 @@
 export const generalColumnsString = `
 gen.purpose, gen.description, gen.given_to, gen.address
-`
+`;
 
 export const generalJoinString = `
 LEFT JOIN general_expenses gen ON gen.expense_id = e.id
-`
+`;
 
 export const createGeneralExpensesQuery = `
 INSERT INTO general_expenses 

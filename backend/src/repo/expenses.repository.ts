@@ -28,7 +28,7 @@ import type {
 import { parseExpenseMap } from "../config/parseExpenseData";
 
 interface TypeIdRes {
-  type_id: number
+  type_id: number;
 }
 
 export const expenseRepository = (db: Database) => {
@@ -132,9 +132,13 @@ export const expenseRepository = (db: Database) => {
 
   const getById = (id: number) => {
     try {
-      const typeIdRaw = db.prepare(`
-        SELECT type_id FROM expenses WHERE id = @id
-      `).get({ id }) as TypeIdRes;
+      const typeIdRaw = db
+        .prepare(
+          `
+          SELECT type_id FROM expenses WHERE id = @id
+          `,
+        )
+        .get({ id }) as TypeIdRes;
 
       const typeId = Number(typeIdRaw.type_id);
 
@@ -151,9 +155,9 @@ export const expenseRepository = (db: Database) => {
         ${expensesFromString}
         ${detailsQueries.join}
         WHERE e.id = @id
-      `
-      
-      const expense = db.prepare(query).get({ id })
+      `;
+
+      const expense = db.prepare(query).get({ id });
 
       if (!expense) {
         throw new Error("Could not find record");

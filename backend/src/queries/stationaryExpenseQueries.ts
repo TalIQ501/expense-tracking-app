@@ -1,10 +1,10 @@
 export const stationaryColumnsString = `
 s.item, s.quantity, s.category, s.brand, s.store, s.address
-`
+`;
 
 export const stationaryJoinString = `
 LEFT JOIN stationary_expenses s ON s.expense_id = e.id
-`
+`;
 
 export const createStationaryExpensesQuery = `
 INSERT INTO stationary_expenses 
