@@ -18,6 +18,25 @@ FROM expenses
 WHERE id = @id
 `;
 
+export const expensesQueryMap = {
+  expense_date: {
+    column: "expense_date",
+    param: "@expense_date",
+  },
+  amount: {
+    column: "amount",
+    param: "@amount",
+  },
+  type_id: {
+    column: "type_id",
+    param: "@type_id",
+  },
+  rating: {
+    column: "rating",
+    param: "@rating",
+  },
+};
+
 export const createExpenseQuery = `
 INSERT INTO expenses
 (expense_date, amount, type_id, rating)
@@ -47,6 +66,7 @@ SELECT * FROM expenses
 WHERE id = @id
 AND deleted_at IS NOT NULL
 `;
+
 export const hardDeleteExpenseQuery = `
 
 `;

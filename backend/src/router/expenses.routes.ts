@@ -6,7 +6,12 @@ import type {
   IExpenseFilters,
   IPageFilters,
 } from "../../../shared/types/queryFilters";
-import type { IExpenseRequestBody } from "../../../shared/types/request";
+import type {
+  IExpenseRequestBody,
+  IRequestBody,
+  IRequestBodyExtra,
+} from "../../../shared/types/request";
+import { parseExpenseMap } from "../config/parseExpenseData";
 
 export const expenseRouter: FastifyPluginAsync = async (
   app: FastifyInstance,
@@ -52,16 +57,18 @@ export const expenseRouter: FastifyPluginAsync = async (
   app.post("/", async (req, reply) => {
     try {
       const { expense_date, amount, type_id, rating, ...extraData } =
-        req.body as IExpenseRequestBody;
+        req.body as IRequestBody;
 
-      const expenseData: IExpenseRequestBody = {
+      const parseFn = parseExpenseMap["expense"];
+
+      const expenseData: IExpenseRequestBody = parseFn({
         expense_date,
-        amount: Number(amount),
-        type_id: Number(type_id),
-        ...(rating !== undefined && { rating: Number(rating) }),
-      };
+        amount,
+        type_id,
+        rating,
+      });
 
-      const id = repo.create(expenseData, extraData);
+      const id = repo.create(expenseData, extraData as IRequestBodyExtra);
 
       return { id };
     } catch (ex) {

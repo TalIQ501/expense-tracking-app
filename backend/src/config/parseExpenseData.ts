@@ -1,11 +1,28 @@
-const generalValidator = (data: Record<string, unknown>) => ({
+import {
+  IClothesRequestBody,
+  IExpenseRequestBody,
+  IFoodRequestBody,
+  IGeneralRequestBody,
+  IGroceryRequestBody,
+  IStationaryRequestBody,
+  ITransportRequestBody,
+} from "shared/types/request";
+
+const mainExpenseValidator = (data: IExpenseRequestBody) => ({
+  expense_date: data.expense_date,
+  amount: Number(data.amount),
+  type_id: Number(data.type_id),
+  rating: Number(data.rating),
+});
+
+const generalValidator = (data: IGeneralRequestBody) => ({
   purpose: data.purpose,
   description: data.description,
   given_to: data.given_to,
   address: data.address,
 });
 
-const foodValidator = (data: Record<string, unknown>) => ({
+const foodValidator = (data: IFoodRequestBody) => ({
   item: data.item,
   quantity: Number(data.quantity),
   outlet: data.outlet,
@@ -13,7 +30,7 @@ const foodValidator = (data: Record<string, unknown>) => ({
   address: data.address,
 });
 
-const transportValidator = (data: Record<string, unknown>) => ({
+const transportValidator = (data: ITransportRequestBody) => ({
   mode: data.mode,
   origin: data.origin,
   origin_region: data.origin_region,
@@ -22,7 +39,7 @@ const transportValidator = (data: Record<string, unknown>) => ({
   service_name: data.service_name,
 });
 
-const groceryValidator = (data: Record<string, unknown>) => ({
+const groceryValidator = (data: IGroceryRequestBody) => ({
   item: data.item,
   quantity: Number(data.quantity),
   category: data.category,
@@ -31,7 +48,7 @@ const groceryValidator = (data: Record<string, unknown>) => ({
   address: data.address,
 });
 
-const stationaryValidator = (data: Record<string, unknown>) => ({
+const stationaryValidator = (data: IStationaryRequestBody) => ({
   item: data.item,
   quantity: Number(data.quantity),
   category: data.category,
@@ -40,7 +57,7 @@ const stationaryValidator = (data: Record<string, unknown>) => ({
   address: data.address,
 });
 
-const clothesValidator = (data: Record<string, unknown>) => ({
+const clothesValidator = (data: IClothesRequestBody) => ({
   item: data.item,
   quantity: Number(data.quantity),
   category: data.category,
@@ -50,6 +67,7 @@ const clothesValidator = (data: Record<string, unknown>) => ({
 });
 
 export const parseExpenseMap = {
+  expense: mainExpenseValidator,
   general: generalValidator,
   food: foodValidator,
   transport: transportValidator,

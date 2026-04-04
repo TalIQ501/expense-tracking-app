@@ -20,9 +20,9 @@ export interface IFoodExpense {
   expense_id: number;
   item?: string;
   quantity?: number;
-  outlet?: number;
-  area?: number;
-  address?: number;
+  outlet?: string;
+  area?: string;
+  address?: string;
 }
 
 export interface ITransportExpense {
@@ -37,7 +37,7 @@ export interface ITransportExpense {
 
 export interface IGroceryExpense {
   expense_id: number;
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -47,7 +47,7 @@ export interface IGroceryExpense {
 
 export interface IStationaryExpense {
   expense_id: number;
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -57,7 +57,7 @@ export interface IStationaryExpense {
 
 export interface IClothesExpense {
   expense_id: number;
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -76,4 +76,10 @@ export interface ExpenseTypeMap {
 
 export type ExpenseTypes = keyof ExpenseTypeMap;
 
-export type IExpenseTypes = IGeneralExpense | IFoodExpense | ITransportExpense | IGroceryExpense | IStationaryExpense | IClothesExpense
+export type IExpenseTypes =
+  | IGeneralExpense
+  | IFoodExpense
+  | ITransportExpense
+  | IGroceryExpense
+  | IStationaryExpense
+  | IClothesExpense;

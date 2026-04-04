@@ -43,7 +43,7 @@ export interface ITRansportFilters {
 }
 
 export interface IGroceryFilters {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -51,7 +51,7 @@ export interface IGroceryFilters {
 }
 
 export interface IStationaryFilters {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -59,7 +59,7 @@ export interface IStationaryFilters {
 }
 
 export interface IClothesFilters {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -81,4 +81,4 @@ export type IAllConditionFilters = IExpenseFilters &
   IStationaryFilters &
   IClothesFilters;
 
-export type IAllFilters = ISortFilters & IAllConditionFilters
+export type IAllFilters = ISortFilters & IAllConditionFilters;

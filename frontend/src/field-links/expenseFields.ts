@@ -98,7 +98,7 @@ export const EXPENSE_FIELDS: Record<ExpenseType, FieldConfig[]> = {
       type: "text",
       default: "",
     },
-    { name: "service", label: "Service", type: "text", default: "" },
+    { name: "service_name", label: "Service", type: "text", default: "" },
     { name: "rating", label: "Rating", type: "number", default: "" },
   ],
   grocery: [

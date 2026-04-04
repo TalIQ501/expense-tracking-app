@@ -17,7 +17,7 @@ export interface IFoodRequestBody {
   quantity?: number;
   outlet?: number;
   area?: number;
-  address?: number;
+  address?: string;
 }
 
 export interface ITransportRequestBody {
@@ -30,7 +30,7 @@ export interface ITransportRequestBody {
 }
 
 export interface IGroceryRequestBody {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -39,7 +39,7 @@ export interface IGroceryRequestBody {
 }
 
 export interface IStationaryRequestBody {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -48,7 +48,7 @@ export interface IStationaryRequestBody {
 }
 
 export interface IClothesRequestBody {
-  item?: number;
+  item?: string;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -66,3 +66,13 @@ export interface ExpenseRequestMap {
 }
 
 export type ExpenseRequestTypes = keyof ExpenseRequestMap;
+
+export type IRequestBodyExtra =
+  | IGeneralRequestBody
+  | IFoodRequestBody
+  | ITransportRequestBody
+  | IGroceryRequestBody
+  | IStationaryRequestBody
+  | IClothesRequestBody;
+
+export type IRequestBody = IExpenseRequestBody & IRequestBodyExtra

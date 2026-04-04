@@ -16,14 +16,15 @@ import {
 import type { IExpense } from "../../../shared/types/expense";
 import {
   allFilterConditionMap,
-  createQueryMap,
   getDetailsQueryMap,
+  queryParamsMap,
 } from "../config/expenseConditionBuilder";
 import { logger } from "../plugins/loggerPlugin";
 import { isError } from "../utils/isError";
 import type {
   IExpenseRequestBody,
   ExpenseRequestTypes,
+  IRequestBodyExtra,
 } from "../../../shared/types/request";
 import { parseExpenseMap } from "../config/parseExpenseData";
 
@@ -73,7 +74,7 @@ export const expenseRepository = (db: Database) => {
     return { conditions, params, offset, sort, sortDesc };
   };
 
-  const selectTable = (type_id: number): ExpenseRequestTypes => {
+  const selectType = (type_id: number): ExpenseRequestTypes => {
     const query = typeNameQuery;
 
     const result = db.prepare(query).get({ type_id }) as {
@@ -81,6 +82,38 @@ export const expenseRepository = (db: Database) => {
     };
 
     return result.name;
+  };
+
+  const buildCreateQuery = (
+    type: ExpenseRequestTypes,
+    data: IRequestBodyExtra,
+  ) => {
+    const columns: string[] = [];
+    const params: string[] = [];
+
+    const map = queryParamsMap[type];
+
+    Object.entries(data ?? {}).forEach(([key, value]) => {
+      const obj = (map as Record<string, { column: string; param: string }>)[
+        key
+      ];
+
+      if (!obj) return;
+
+      columns.push(obj.column);
+      params.push(obj.param);
+    });
+
+    const query = `
+    INSERT INTO ${type}_expenses
+    (expense_id ${columns ? ", " + columns.join(", ") : ""})
+    VALUES
+    (@expense_id ${params ? ", " + params.join(", ") : ""})
+    `;
+
+    logger.info(query);
+
+    return query;
   };
 
   const getAll = (filters?: IExpenseFilters, pageFilters?: IPageFilters) => {
@@ -142,7 +175,7 @@ export const expenseRepository = (db: Database) => {
 
       const typeId = Number(typeIdRaw.type_id);
 
-      const type = selectTable(typeId);
+      const type = selectType(typeId);
 
       const getDetailsQueries = (type: ExpenseRequestTypes) =>
         getDetailsQueryMap[type];
@@ -175,17 +208,20 @@ export const expenseRepository = (db: Database) => {
 
   const create = (
     expense: IExpenseRequestBody,
-    extraData: Record<string, unknown>,
+    extraData: IRequestBodyExtra,
   ) => {
     const typeId = Number(expense.type_id);
 
-    const type = selectTable(typeId);
+    const type = selectType(typeId);
 
-    const getCreateQuery = (type: ExpenseRequestTypes) => createQueryMap[type];
+    const getCreateQuery = (type: ExpenseRequestTypes) =>
+      buildCreateQuery(type, extraData);
 
     const createTransaction = db.transaction(
-      (expense: IExpenseRequestBody, extraData: Record<string, unknown>) => {
+      (expense: IExpenseRequestBody, extraData: IRequestBodyExtra) => {
         const expenseEntry = db.prepare(createExpenseQuery).run(expense);
+
+        logger.info(createExpenseQuery);
 
         const createQuery = getCreateQuery(type);
 

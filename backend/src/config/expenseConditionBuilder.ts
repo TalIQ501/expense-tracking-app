@@ -1,32 +1,33 @@
 import {
   clothesColumnsString,
   clothesJoinString,
-  createClothesExpensesQuery,
+  clothesQueryMap,
 } from "../queries/clothesExpenseQueries";
+import { expensesQueryMap } from "../queries/expenseQueries";
 import {
-  createFoodExpensesQuery,
   foodColumnsString,
   foodJoinString,
+  foodQueryMap,
 } from "../queries/foodExpenseQueries";
 import {
-  createGeneralExpensesQuery,
   generalColumnsString,
   generalJoinString,
+  generalQueryMap,
 } from "../queries/generalExpenseQueries";
 import {
-  createGroceryExpensesQuery,
   groceryColumnsString,
   groceryJoinString,
+  groceryQueryMap,
 } from "../queries/groceryExpenseQueries";
 import {
-  createStationaryExpensesQuery,
   stationaryColumnsString,
   stationaryJoinString,
+  stationaryQueryMap,
 } from "../queries/stationaryExpenseQueries";
 import {
-  createTransportExpensesQuery,
   transportColumnsString,
   transportJoinString,
+  transportQueryMap,
 } from "../queries/transportExpenseQueries";
 
 export const expenseFilterConditionMap = {
@@ -47,13 +48,14 @@ export const expenseFilterConditionMap = {
   rating_to: "e.rating >= @rating_to",
 };
 
-export const createQueryMap = {
-  general: createGeneralExpensesQuery,
-  food: createFoodExpensesQuery,
-  transport: createTransportExpensesQuery,
-  grocery: createGroceryExpensesQuery,
-  stationary: createStationaryExpensesQuery,
-  clothes: createClothesExpensesQuery,
+export const queryParamsMap = {
+  expenses: expensesQueryMap,
+  general: generalQueryMap,
+  food: foodQueryMap,
+  transport: transportQueryMap,
+  grocery: groceryQueryMap,
+  stationary: stationaryQueryMap,
+  clothes: clothesQueryMap,
 };
 
 export const getDetailsQueryMap = {
