@@ -39,7 +39,7 @@ export const expenseRepository = (db: Database) => {
       .prepare(
         `
           SELECT type_id FROM expenses WHERE id = @id
-          `,
+        `,
       )
       .get({ id }) as TypeIdRes;
 
@@ -53,6 +53,7 @@ export const expenseRepository = (db: Database) => {
   const buildFilters = (
     filters?: IAllFilters,
     pageFilters?: IPageFilters,
+    deleted?: boolean,
     conditionMap: typeof allFilterConditionMap = allFilterConditionMap,
   ) => {
     const orderByMap = {
@@ -67,14 +68,14 @@ export const expenseRepository = (db: Database) => {
     let sort: sortType = "e.expense_date";
     const params: Record<string, unknown> = {};
 
-    if (filters?.deleted) {
-      conditions.push("e.deleted_at IS NOT NULL");
-    } else {
+    if (!deleted) {
       conditions.push("e.deleted_at IS NULL");
+    } else {
+      conditions.push("e.deleted_at IS NOT NULL");
     }
 
     Object.entries(filters ?? {}).forEach(([key, value]) => {
-      if (value === undefined || value === null || key === "deleted") return;
+      if (value === undefined || value === null) return;
 
       sortDesc = filters?.sort_desc ? true : false;
 
@@ -194,11 +195,16 @@ export const expenseRepository = (db: Database) => {
     };
   };
 
-  const getAll = (filters?: IExpenseFilters, pageFilters?: IPageFilters) => {
+  const getAll = (
+    filters?: IExpenseFilters,
+    pageFilters?: IPageFilters,
+    deleted?: boolean,
+  ) => {
     try {
       const { conditions, params, offset, sort, sortDesc } = buildFilters(
         filters,
         pageFilters,
+        deleted,
       );
 
       const getAllQuery = `

@@ -27,7 +27,9 @@ export const expenseRouter: FastifyPluginAsync = async (
       const { page, pageSize, deleted, ...filters } =
         req.query as IExpenseFilters & IPageFilters;
 
-      return repo.getAll(filters, { page, pageSize });
+      const parseDeleted = deleted === "true" ? true : false;
+
+      return repo.getAll(filters, { page, pageSize }, parseDeleted);
     } catch (ex: unknown) {
       if (isError(ex)) {
         logger.error({ error: ex.message });
