@@ -12,6 +12,7 @@ import {
   expensesColumnsString,
   expensesFromString,
   typeNameQuery,
+  undoDeleteExpenseQuery,
 } from "../queries/expenseQueries";
 import type { ExpenseTypes } from "../../../shared/types/expense";
 import {
@@ -340,5 +341,14 @@ export const expenseRepository = (db: Database) => {
     return db.prepare(hardDeleteExpenseQuery).run({ id });
   };
 
-  return { getAll, getById, create, softDelete, update, hardDelete };
+  const undoDelete = (id: number) => {
+    const deleted = db.prepare(getDeletedExpenseByIdQuery).run({ id });
+
+    if (!deleted)
+      throw new Error("Record not deleted before or does not exist");
+
+    return db.prepare(undoDeleteExpenseQuery).run({ id });
+  }
+
+  return { getAll, getById, create, softDelete, update, hardDelete, undoDelete };
 };

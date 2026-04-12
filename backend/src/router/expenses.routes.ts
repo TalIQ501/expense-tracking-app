@@ -99,13 +99,8 @@ export const expenseRouter: FastifyPluginAsync = async (
     try {
       const { id: patchId } = req.params as { id: string };
 
-      const {
-        expense_date,
-        amount,
-        type_id,
-        rating,
-        ...extraData
-      } = req.body as IRequestBody;
+      const { expense_date, amount, type_id, rating, ...extraData } =
+        req.body as IRequestBody;
 
       const parseFn = parseExpenseMap["expense"];
 
@@ -131,6 +126,20 @@ export const expenseRouter: FastifyPluginAsync = async (
         return reply.code(400).send({ message: ex.message });
       }
       logger.error("Server Error");
+      logger.error(ex);
+      return reply.code(500).send({ message: "Server Error" });
+    }
+  });
+
+  app.patch("/undo/:id", async (req, reply) => {
+    try {
+      const { id } = req.params as { id: string };
+      return repo.undoDelete(Number(id));
+    } catch (ex) {
+      if (isError(ex)) {
+        logger.error(ex.message);
+        return reply.code(404).send({ message: ex.message });
+      }
       logger.error(ex);
       return reply.code(500).send({ message: "Server Error" });
     }

@@ -69,4 +69,11 @@ AND deleted_at IS NOT NULL
 
 export const hardDeleteExpenseQuery = `
 
+
 `;
+
+export const undoDeleteExpenseQuery = `
+UPDATE expenses SET
+deleted_at = NULL
+WHERE id = @id
+`
