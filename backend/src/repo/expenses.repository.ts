@@ -13,7 +13,7 @@ import {
   expensesFromString,
   typeNameQuery,
 } from "../queries/expenseQueries";
-import type { IExpense } from "../../../shared/types/expense";
+import type { ExpenseTypes } from "../../../shared/types/expense";
 import {
   allFilterConditionMap,
   getDetailsQueryMap,
@@ -33,6 +33,22 @@ interface TypeIdRes {
 }
 
 export const expenseRepository = (db: Database) => {
+  const getTypeById = (id: number) => {
+    const typeIdRaw = db
+      .prepare(
+        `
+          SELECT type_id FROM expenses WHERE id = @id
+          `,
+      )
+      .get({ id }) as TypeIdRes;
+
+    const typeId = Number(typeIdRaw.type_id);
+
+    const type = selectType(typeId);
+
+    return type;
+  };
+
   const buildFilters = (
     filters?: IAllFilters,
     pageFilters?: IPageFilters,
@@ -111,9 +127,70 @@ export const expenseRepository = (db: Database) => {
     (@expense_id ${params ? ", " + params.join(", ") : ""})
     `;
 
-    logger.info(query);
-
     return query;
+  };
+
+  const buildUpdateQuery = (
+    type: ExpenseTypes,
+    expenseData: IExpenseRequestBody,
+    extraData?: IRequestBodyExtra,
+  ) => {
+    const expenseMap = queryParamsMap["expenses"];
+    const extraMap = queryParamsMap[type];
+
+    const generateStatements = (
+      data: IExpenseRequestBody | IRequestBodyExtra,
+      currentMap: Record<string, { column: string; param: string }>,
+    ) => {
+      const statements: string[] = [];
+
+      Object.entries(data ?? {}).forEach(([key, value]) => {
+        if (value === null || value === undefined || Number.isNaN(value))
+          return;
+
+        const obj = currentMap[key];
+
+        if (!obj) return;
+
+        const statement = `${obj.column} = ${obj.param}`;
+
+        statements.push(statement);
+      });
+
+      return statements;
+    };
+
+    const expenseStatements = generateStatements(expenseData, expenseMap);
+
+    const detailsStatements = extraData
+      ? generateStatements(extraData, extraMap)
+      : undefined;
+
+    const updateExpenseQuery = `
+    UPDATE expenses
+    SET last_updated_at = CURRENT_TIMESTAMP
+    ${expenseStatements[0] ? ", " : ""}
+    ${expenseStatements.join(", ")}
+    WHERE id = @expense_id
+    `;
+
+    const updateDetailsQuery = detailsStatements
+      ? `
+    UPDATE ${type}_expenses
+    SET
+    ${detailsStatements.join(", ")}
+    WHERE expense_id = @expense_id
+    `
+      : undefined;
+
+    const isDetailsQuery =
+      detailsStatements && detailsStatements[0] ? true : false;
+
+    return {
+      updateExpenseQuery,
+      updateDetailsQuery,
+      isDetailsQuery,
+    };
   };
 
   const getAll = (filters?: IExpenseFilters, pageFilters?: IPageFilters) => {
@@ -165,17 +242,7 @@ export const expenseRepository = (db: Database) => {
 
   const getById = (id: number) => {
     try {
-      const typeIdRaw = db
-        .prepare(
-          `
-          SELECT type_id FROM expenses WHERE id = @id
-          `,
-        )
-        .get({ id }) as TypeIdRes;
-
-      const typeId = Number(typeIdRaw.type_id);
-
-      const type = selectType(typeId);
+      const type = getTypeById(id);
 
       const getDetailsQueries = (type: ExpenseRequestTypes) =>
         getDetailsQueryMap[type];
@@ -212,37 +279,57 @@ export const expenseRepository = (db: Database) => {
   ) => {
     const typeId = Number(expense.type_id);
 
-    const type = selectType(typeId);
+    const type: ExpenseRequestTypes = selectType(typeId);
 
-    const getCreateQuery = (type: ExpenseRequestTypes) =>
-      buildCreateQuery(type, extraData);
+    const getCreateQuery = () => buildCreateQuery(type, extraData);
 
-    const createTransaction = db.transaction(
-      (expense: IExpenseRequestBody, extraData: IRequestBodyExtra) => {
-        const expenseEntry = db.prepare(createExpenseQuery).run(expense);
+    const createTransaction = db.transaction(() => {
+      const expenseEntry = db.prepare(createExpenseQuery).run({ expense });
 
-        logger.info(createExpenseQuery);
+      const createQuery = getCreateQuery();
 
-        const createQuery = getCreateQuery(type);
+      const parseFn = parseExpenseMap[type];
+      const parsedData = parseFn(extraData);
 
-        const parseFn = parseExpenseMap[type];
-        const parsedData = parseFn(extraData);
+      db.prepare(createQuery).run({
+        expense_id: expenseEntry.lastInsertRowid,
+        ...parsedData,
+      });
+    });
 
-        db.prepare(createQuery).run({
-          expense_id: expenseEntry.lastInsertRowid,
-          ...parsedData,
-        });
-      },
-    );
-
-    return createTransaction(expense, extraData);
+    return createTransaction();
   };
 
   const softDelete = (id: number) => {
     return db.prepare(softDeleteExpenseQuery).run({ id });
   };
 
-  const update = (expense: IExpense) => {};
+  const update = (
+    expense_id: number,
+    expense: IExpenseRequestBody,
+    extraData: IRequestBodyExtra,
+  ) => {
+    const type = getTypeById(expense_id);
+
+    const { updateDetailsQuery, updateExpenseQuery, isDetailsQuery } =
+      buildUpdateQuery(type, expense, extraData);
+
+    const updateTransaction = db.transaction(() => {
+      db.prepare(updateExpenseQuery).run({
+        expense_id,
+        ...expense,
+      });
+
+      if (isDetailsQuery && updateDetailsQuery) {
+        db.prepare(updateDetailsQuery).run({
+          expense_id,
+          ...extraData,
+        });
+      }
+    });
+
+    updateTransaction();
+  };
 
   const hardDelete = (id: number) => {
     const deleted = db.prepare(getDeletedExpenseByIdQuery).run({ id });

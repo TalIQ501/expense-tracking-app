@@ -30,7 +30,6 @@ export const expenseRouter: FastifyPluginAsync = async (
       return repo.getAll(filters, { page, pageSize });
     } catch (ex: unknown) {
       if (isError(ex)) {
-        logger.info("Error Message Router");
         logger.error({ error: ex.message });
         return reply.code(400).send({ message: ex.message });
       }
@@ -91,6 +90,46 @@ export const expenseRouter: FastifyPluginAsync = async (
         logger.error(ex.message);
         return reply.code(404).send({ message: ex.message });
       }
+      logger.error(ex);
+      return reply.code(500).send({ message: "Server Error" });
+    }
+  });
+
+  app.patch("/", async (req, reply) => {
+    try {
+      const {
+        expense_id,
+        expense_date,
+        amount,
+        type_id,
+        rating,
+        ...extraData
+      } = req.body as IRequestBody;
+
+      const parseFn = parseExpenseMap["expense"];
+
+      const expenseId = Number(expense_id);
+
+      const expenseData: IExpenseRequestBody = parseFn({
+        expense_date,
+        amount,
+        type_id,
+        rating,
+      });
+
+      const id = repo.update(
+        expenseId,
+        expenseData,
+        extraData as IRequestBodyExtra,
+      );
+
+      return { id };
+    } catch (ex) {
+      if (isError(ex)) {
+        logger.error(ex.message);
+        return reply.code(400).send({ message: ex.message });
+      }
+      logger.error("Server Error");
       logger.error(ex);
       return reply.code(500).send({ message: "Server Error" });
     }

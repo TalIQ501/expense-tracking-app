@@ -1,7 +1,8 @@
 export interface IExpenseRequestBody {
-  expense_date: string;
-  amount: number;
-  type_id: number;
+  expense_id?: number;
+  expense_date?: string;
+  amount?: number;
+  type_id?: number;
   rating?: number;
 }
 
@@ -75,4 +76,4 @@ export type IRequestBodyExtra =
   | IStationaryRequestBody
   | IClothesRequestBody;
 
-export type IRequestBody = IExpenseRequestBody & IRequestBodyExtra
+export type IRequestBody = IExpenseRequestBody & IRequestBodyExtra;
