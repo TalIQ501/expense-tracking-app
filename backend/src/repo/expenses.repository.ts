@@ -348,7 +348,15 @@ export const expenseRepository = (db: Database) => {
       throw new Error("Record not deleted before or does not exist");
 
     return db.prepare(undoDeleteExpenseQuery).run({ id });
-  }
+  };
 
-  return { getAll, getById, create, softDelete, update, hardDelete, undoDelete };
+  return {
+    getAll,
+    getById,
+    create,
+    softDelete,
+    update,
+    hardDelete,
+    undoDelete,
+  };
 };
