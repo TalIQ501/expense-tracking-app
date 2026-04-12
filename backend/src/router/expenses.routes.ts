@@ -95,10 +95,11 @@ export const expenseRouter: FastifyPluginAsync = async (
     }
   });
 
-  app.patch("/", async (req, reply) => {
+  app.patch("/:id", async (req, reply) => {
     try {
+      const { id: patchId } = req.params as { id: string };
+
       const {
-        expense_id,
         expense_date,
         amount,
         type_id,
@@ -108,7 +109,7 @@ export const expenseRouter: FastifyPluginAsync = async (
 
       const parseFn = parseExpenseMap["expense"];
 
-      const expenseId = Number(expense_id);
+      const expenseId = Number(patchId);
 
       const expenseData: IExpenseRequestBody = parseFn({
         expense_date,
