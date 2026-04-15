@@ -2,10 +2,7 @@ import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { expenseRepository } from "../repo/expenses.repository";
 import { isError } from "../utils/isError";
 import { logger } from "../plugins/loggerPlugin";
-import type {
-  IExpenseFilters,
-  IPageFilters,
-} from "../../../shared/types/queryFilters";
+import type { IAllFilters } from "../../../shared/types/queryFilters";
 import type {
   IExpenseRequestBody,
   IRequestBody,
@@ -24,12 +21,24 @@ export const expenseRouter: FastifyPluginAsync = async (
 
   app.get("/", async (req, reply) => {
     try {
-      const { page, pageSize, deleted, ...filters } =
-        req.query as IExpenseFilters & IPageFilters;
+      const { page, pageSize, deleted, sort_desc, sort_type, ...filters } =
+        req.query as IAllFilters;
 
       const parseDeleted = deleted === "true" ? true : false;
 
-      return repo.getAll(filters, { page, pageSize }, parseDeleted);
+      const parsedSortDesc = sort_desc === "false" ? false : true;
+
+      const sortFilters = {
+        sort_desc: parsedSortDesc,
+        sort_type: sort_type,
+      };
+
+      return repo.getAll(
+        filters,
+        { page, pageSize },
+        sortFilters,
+        parseDeleted,
+      );
     } catch (ex: unknown) {
       if (isError(ex)) {
         logger.error({ error: ex.message });

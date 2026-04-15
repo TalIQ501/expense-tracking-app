@@ -68,9 +68,12 @@ export interface IClothesFilters {
 
 export interface ISortFilters {
   sort_desc?: boolean;
-  sort_date?: boolean;
-  sort_type?: boolean;
-  sort_deleted_at?: boolean;
+  sort_type?: string;
+}
+
+export interface ISortFiltersRequest {
+  sort_desc?: string;
+  sort_type?: string;
 }
 
 export type IAllConditionFilters = IExpenseFilters &
@@ -81,4 +84,4 @@ export type IAllConditionFilters = IExpenseFilters &
   IStationaryFilters &
   IClothesFilters;
 
-export type IAllFilters = ISortFilters & IAllConditionFilters;
+export type IAllFilters = ISortFiltersRequest & IPageFilters & IAllConditionFilters;

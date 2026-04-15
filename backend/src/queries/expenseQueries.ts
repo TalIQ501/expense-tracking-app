@@ -76,4 +76,4 @@ export const undoDeleteExpenseQuery = `
 UPDATE expenses SET
 deleted_at = NULL
 WHERE id = @id
-`
+`;

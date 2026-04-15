@@ -1,8 +1,8 @@
 import { type Database } from "better-sqlite3";
 import type {
-  IAllFilters,
   IExpenseFilters,
   IPageFilters,
+  ISortFilters,
 } from "../../../shared/types/queryFilters";
 import {
   createExpenseQuery,
@@ -51,9 +51,10 @@ export const expenseRepository = (db: Database) => {
   };
 
   const buildFilters = (
-    filters?: IAllFilters,
+    filters?: IExpenseFilters,
     pageFilters?: IPageFilters,
     deleted?: boolean,
+    sortFilters?: ISortFilters,
     conditionMap: typeof allFilterConditionMap = allFilterConditionMap,
   ) => {
     const orderByMap = {
@@ -62,7 +63,6 @@ export const expenseRepository = (db: Database) => {
     } as const;
 
     type sortType = (typeof orderByMap)[keyof typeof orderByMap];
-    let sortDesc: boolean = true;
 
     const conditions: string[] = [];
     let sort: sortType = "e.expense_date";
@@ -77,8 +77,6 @@ export const expenseRepository = (db: Database) => {
     Object.entries(filters ?? {}).forEach(([key, value]) => {
       if (value === undefined || value === null) return;
 
-      sortDesc = filters?.sort_desc ? true : false;
-
       const condition = conditionMap[key as keyof typeof allFilterConditionMap];
       if (!condition) return;
 
@@ -89,7 +87,13 @@ export const expenseRepository = (db: Database) => {
     const offset =
       ((pageFilters?.page ?? 1) - 1) * (pageFilters?.pageSize ?? 20);
 
-    return { conditions, params, offset, sort, sortDesc };
+    return {
+      conditions,
+      params,
+      offset,
+      sort,
+      sortDesc: sortFilters?.sort_desc,
+    };
   };
 
   const selectType = (type_id: number): ExpenseRequestTypes => {
@@ -198,6 +202,7 @@ export const expenseRepository = (db: Database) => {
   const getAll = (
     filters?: IExpenseFilters,
     pageFilters?: IPageFilters,
+    sortFilters?: ISortFilters,
     deleted?: boolean,
   ) => {
     try {
@@ -205,6 +210,7 @@ export const expenseRepository = (db: Database) => {
         filters,
         pageFilters,
         deleted,
+        sortFilters,
       );
 
       const getAllQuery = `
@@ -230,6 +236,8 @@ export const expenseRepository = (db: Database) => {
         ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
         LIMIT @pageSize OFFSET @offset
       `;
+
+      logger.info(getAllQuery);
 
       const data = db
         .prepare(getAllQuery)
