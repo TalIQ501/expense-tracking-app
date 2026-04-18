@@ -8,7 +8,7 @@ import type {
   IRequestBody,
   IRequestBodyExtra,
 } from "../../../../shared/types/request";
-import { parseExpenseMap } from "../../config/expenses.parser";
+import { parseExpenseMap } from "./expenses.parser";
 
 export const expenseRouter: FastifyPluginAsync = async (
   app: FastifyInstance,

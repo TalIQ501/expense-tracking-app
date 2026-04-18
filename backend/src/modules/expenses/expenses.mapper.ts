@@ -2,33 +2,33 @@ import {
   clothesColumnsString,
   clothesJoinString,
   clothesQueryMap,
-} from "./queries/clothesExpenseQueries";
+} from "./queries/clothes.sql";
 import { expensesQueryMap } from "./queries/expense.sql";
 import {
   foodColumnsString,
   foodJoinString,
   foodQueryMap,
-} from "./queries/foodExpenseQueries";
+} from "./queries/food.sql";
 import {
   generalColumnsString,
   generalJoinString,
   generalQueryMap,
-} from "./queries/generalExpenseQueries";
+} from "./queries/general.sql";
 import {
   groceryColumnsString,
   groceryJoinString,
   groceryQueryMap,
-} from "./queries/groceryExpenseQueries";
+} from "./queries/grocery.sql";
 import {
   stationaryColumnsString,
   stationaryJoinString,
   stationaryQueryMap,
-} from "./queries/stationaryExpenseQueries";
+} from "./queries/stationary.sql";
 import {
   transportColumnsString,
   transportJoinString,
   transportQueryMap,
-} from "./queries/transportExpenseQueries";
+} from "./queries/transport.sql";
 
 export const expenseFilterConditionMap = {
   deleted: "e.deleted = @deleted",

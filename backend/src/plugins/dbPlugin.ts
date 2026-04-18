@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import { type FastifyPluginAsync } from "fastify";
-import { initTablesQuery } from "../modules/expenses/queries/initTablesQueries";
+import { initTablesQuery } from "../modules/init/initTables.sql";
 
 export const dbPlugin: FastifyPluginAsync = async (app) => {
   const dbPath = path.resolve("./data/data.sqlite");
