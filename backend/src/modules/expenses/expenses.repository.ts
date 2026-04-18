@@ -1,22 +1,12 @@
 import { type Database } from "better-sqlite3";
-import type {
-  IExpenseFilters,
-  IPageFilters,
-  ISortFilters,
-} from "../../../../shared/types/queryFilters";
 import {
   createExpenseQuery,
   hardDeleteExpenseQuery,
   getDeletedExpenseByIdQuery,
   softDeleteExpenseQuery,
-  expensesColumnsString,
-  expensesFromString,
   typeNameQuery,
   undoDeleteExpenseQuery,
 } from "./queries/expense.sql";
-import {
-  getDetailsQueryMap,
-} from "./expenses.mapper";
 import { logger } from "../../plugins/loggerPlugin";
 import { isError } from "../../utils/isError";
 import type {
@@ -24,26 +14,22 @@ import type {
   ExpenseRequestTypes,
   IRequestBodyExtra,
 } from "../../../../shared/types/request";
-import { parseExpenseMap } from "./expenses.parser";
-import { buildCreateQuery, buildFilters, buildUpdateQuery } from "./expenses.builder";
 
 interface TypeIdRes {
   type_id: number;
 }
 
 export const expenseRepository = (db: Database) => {
-  const selectType = (type_id: number): ExpenseRequestTypes => {
-    const query = typeNameQuery;
-
+  const selectType = (type_id: number, query: string): ExpenseRequestTypes => {
     const result = db.prepare(query).get({ type_id }) as {
       name: ExpenseRequestTypes;
     };
 
     return result.name;
   };
-  
+
   const getTypeById = (id: number) => {
-    const typeIdRaw = db
+    const typeId = db
       .prepare(
         `
           SELECT type_id FROM expenses WHERE id = @id
@@ -51,56 +37,19 @@ export const expenseRepository = (db: Database) => {
       )
       .get({ id }) as TypeIdRes;
 
-    const typeId = Number(typeIdRaw.type_id);
-
-    const type = selectType(typeId);
-
-    return type;
+    return typeId;
   };
 
   const getAll = (
-    filters?: IExpenseFilters,
-    pageFilters?: IPageFilters,
-    sortFilters?: ISortFilters,
-    deleted?: boolean,
+    query: string,
+    params: Record<string, unknown>,
+    pageSize: number,
+    offset: number,
   ) => {
     try {
-      const { conditions, params, offset, sort, sortDesc } = buildFilters(
-        filters,
-        pageFilters,
-        deleted,
-        sortFilters,
-      );
-
-      const getAllQuery = `
-        SELECT 
-        e.id, e.expense_date, e.amount, e.type_id, e.rating, e.recorded_at, e.last_updated_at, e.deleted_at, 
-        c.name as expense_type,
-        gen.purpose, gen.description, gen.given_to,
-        f.outlet, f.area,
-        t.mode, t.origin, t.origin_region, t.destination, t.destination_region, t.service_name,
-        COALESCE(gen.address, f.address) as address,
-        COALESCE(f.item, gr.item, s.item, clo.item) as item,
-        COALESCE(f.quantity, gr.quantity, s.quantity, clo.quantity) as quantity,
-        COALESCE(gr.category, s.category, clo.category) as category
-        FROM expenses e
-        JOIN expense_types c ON e.type_id = c.id
-        LEFT JOIN general_expenses gen ON gen.expense_id = e.id
-        LEFT JOIN food_expenses f ON f.expense_id = e.id
-        LEFT JOIN transport_expenses t ON t.expense_id = e.id
-        LEFT JOIN grocery_expenses gr ON gr.expense_id = e.id
-        LEFT JOIN stationary_expenses s ON s.expense_id = e.id
-        LEFT JOIN clothes_expenses clo ON clo.expense_id = e.id
-        WHERE ${conditions.join(" AND ")}
-        ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
-        LIMIT @pageSize OFFSET @offset
-      `;
-
-      logger.info(getAllQuery);
-
       const data = db
-        .prepare(getAllQuery)
-        .all({ ...params, pageSize: pageFilters?.pageSize ?? 20, offset });
+        .prepare(query)
+        .all({ ...params, pageSize: pageSize ?? 20, offset });
 
       return data;
     } catch (ex: unknown) {
@@ -114,23 +63,8 @@ export const expenseRepository = (db: Database) => {
     return;
   };
 
-  const getById = (id: number) => {
+  const getById = (id: number, query: string) => {
     try {
-      const type = getTypeById(id);
-
-      const getDetailsQueries = (type: ExpenseRequestTypes) =>
-        getDetailsQueryMap[type];
-
-      const detailsQueries = getDetailsQueries(type);
-
-      const query = `
-        SELECT ${expensesColumnsString},
-        ${detailsQueries.columns}
-        ${expensesFromString}
-        ${detailsQueries.join}
-        WHERE e.id = @id
-      `;
-
       const expense = db.prepare(query).get({ id });
 
       if (!expense) {
@@ -149,25 +83,15 @@ export const expenseRepository = (db: Database) => {
 
   const create = (
     expense: IExpenseRequestBody,
+    createQuery: string,
     extraData: IRequestBodyExtra,
   ) => {
-    const typeId = Number(expense.type_id);
-
-    const type: ExpenseRequestTypes = selectType(typeId);
-
-    const getCreateQuery = () => buildCreateQuery(type, extraData);
-
     const createTransaction = db.transaction(() => {
       const expenseEntry = db.prepare(createExpenseQuery).run({ expense });
 
-      const createQuery = getCreateQuery();
-
-      const parseFn = parseExpenseMap[type];
-      const parsedData = parseFn(extraData);
-
       db.prepare(createQuery).run({
         expense_id: expenseEntry.lastInsertRowid,
-        ...parsedData,
+        ...extraData,
       });
     });
 
@@ -182,12 +106,10 @@ export const expenseRepository = (db: Database) => {
     expense_id: number,
     expense: IExpenseRequestBody,
     extraData: IRequestBodyExtra,
+    updateExpenseQuery: string,
+    isDetailsQuery: boolean,
+    updateDetailsQuery?: string,
   ) => {
-    const type = getTypeById(expense_id);
-
-    const { updateDetailsQuery, updateExpenseQuery, isDetailsQuery } =
-      buildUpdateQuery(type, expense, extraData);
-
     const updateTransaction = db.transaction(() => {
       db.prepare(updateExpenseQuery).run({
         expense_id,
@@ -224,6 +146,8 @@ export const expenseRepository = (db: Database) => {
   };
 
   return {
+    selectType,
+    getTypeById,
     getAll,
     getById,
     create,

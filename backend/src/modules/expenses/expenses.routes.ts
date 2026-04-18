@@ -1,5 +1,4 @@
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { expenseRepository } from "./expenses.repository";
 import { isError } from "../../utils/isError";
 import { logger } from "../../plugins/loggerPlugin";
 import type { IAllFilters } from "../../../../shared/types/queryFilters";
@@ -9,6 +8,7 @@ import type {
   IRequestBodyExtra,
 } from "../../../../shared/types/request";
 import { parseExpenseMap } from "./expenses.parser";
+import { expenseService } from "./expenses.service";
 
 export const expenseRouter: FastifyPluginAsync = async (
   app: FastifyInstance,
@@ -17,28 +17,16 @@ export const expenseRouter: FastifyPluginAsync = async (
     throw new Error("Database not initialised");
   }
 
-  const repo = expenseRepository(app.db);
+  const service = expenseService(app.db);
 
   app.get("/", async (req, reply) => {
     try {
       const { page, pageSize, deleted, sort_desc, sort_type, ...filters } =
         req.query as IAllFilters;
 
-      const parseDeleted = deleted === "true" ? true : false;
+      const body = req.query as IAllFilters;
 
-      const parsedSortDesc = sort_desc === "false" ? false : true;
-
-      const sortFilters = {
-        sort_desc: parsedSortDesc,
-        sort_type: sort_type,
-      };
-
-      return repo.getAll(
-        filters,
-        { page, pageSize },
-        sortFilters,
-        parseDeleted,
-      );
+      return service.getAll(body);
     } catch (ex: unknown) {
       if (isError(ex)) {
         logger.error({ error: ex.message });
@@ -53,7 +41,7 @@ export const expenseRouter: FastifyPluginAsync = async (
   app.get("/:id", async (req, reply) => {
     try {
       const { id } = req.params as { id: string };
-      return repo.getById(Number(id));
+      return service.getById(id);
     } catch (ex) {
       if (isError(ex)) {
         logger.error(ex.message);
@@ -78,7 +66,7 @@ export const expenseRouter: FastifyPluginAsync = async (
         rating,
       });
 
-      const id = repo.create(expenseData, extraData as IRequestBodyExtra);
+      const id = service.create(expenseData, extraData as IRequestBodyExtra);
 
       return { id };
     } catch (ex) {
@@ -95,7 +83,7 @@ export const expenseRouter: FastifyPluginAsync = async (
   app.delete("/:id", async (req, reply) => {
     try {
       const { id } = req.params as { id: string };
-      return repo.softDelete(Number(id));
+      return service.softDelete(Number(id));
     } catch (ex) {
       if (isError(ex)) {
         logger.error(ex.message);
@@ -110,25 +98,9 @@ export const expenseRouter: FastifyPluginAsync = async (
     try {
       const { id: patchId } = req.params as { id: string };
 
-      const { expense_date, amount, type_id, rating, ...extraData } =
-        req.body as IRequestBody;
+      const body = req.body as IRequestBody;
 
-      const parseFn = parseExpenseMap["expense"];
-
-      const expenseId = Number(patchId);
-
-      const expenseData: IExpenseRequestBody = parseFn({
-        expense_date,
-        amount,
-        type_id,
-        rating,
-      });
-
-      const id = repo.update(
-        expenseId,
-        expenseData,
-        extraData as IRequestBodyExtra,
-      );
+      const id = service.update(patchId, body);
 
       return { id };
     } catch (ex) {
@@ -145,7 +117,7 @@ export const expenseRouter: FastifyPluginAsync = async (
   app.patch("/undo/:id", async (req, reply) => {
     try {
       const { id } = req.params as { id: string };
-      return repo.undoDelete(Number(id));
+      return service.undoDelete(Number(id));
     } catch (ex) {
       if (isError(ex)) {
         logger.error(ex.message);
