@@ -25,7 +25,7 @@ import type {
   IRequestBodyExtra,
 } from "../../../../shared/types/request";
 import { parseExpenseMap } from "./expenses.parser";
-import { buildCreateQuery, buildFilters, buildUpdateQuery } from "./expense.builder";
+import { buildCreateQuery, buildFilters, buildUpdateQuery } from "./expenses.builder";
 
 interface TypeIdRes {
   type_id: number;
