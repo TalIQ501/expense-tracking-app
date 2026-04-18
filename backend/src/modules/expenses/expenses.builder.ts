@@ -1,8 +1,7 @@
 import {
   allFilterConditionMap,
   queryParamsMap,
-} from "backend/src/modules/expenses/expenses.mapper";
-import { typeNameQuery } from "backend/src/modules/expenses/queries/expense.sql";
+} from "./expenses.mapper";
 import { ExpenseTypes } from "shared/types/expense";
 import {
   IExpenseFilters,
