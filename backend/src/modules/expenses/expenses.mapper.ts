@@ -2,33 +2,33 @@ import {
   clothesColumnsString,
   clothesJoinString,
   clothesQueryMap,
-} from "../queries/clothesExpenseQueries";
-import { expensesQueryMap } from "../queries/expenseQueries";
+} from "./queries/clothesExpenseQueries";
+import { expensesQueryMap } from "./queries/expense.sql";
 import {
   foodColumnsString,
   foodJoinString,
   foodQueryMap,
-} from "../queries/foodExpenseQueries";
+} from "./queries/foodExpenseQueries";
 import {
   generalColumnsString,
   generalJoinString,
   generalQueryMap,
-} from "../queries/generalExpenseQueries";
+} from "./queries/generalExpenseQueries";
 import {
   groceryColumnsString,
   groceryJoinString,
   groceryQueryMap,
-} from "../queries/groceryExpenseQueries";
+} from "./queries/groceryExpenseQueries";
 import {
   stationaryColumnsString,
   stationaryJoinString,
   stationaryQueryMap,
-} from "../queries/stationaryExpenseQueries";
+} from "./queries/stationaryExpenseQueries";
 import {
   transportColumnsString,
   transportJoinString,
   transportQueryMap,
-} from "../queries/transportExpenseQueries";
+} from "./queries/transportExpenseQueries";
 
 export const expenseFilterConditionMap = {
   deleted: "e.deleted = @deleted",
@@ -92,9 +92,9 @@ export const generalFilterConditionMap = {
 };
 
 export const foodFilterConditionMap = {
-  food_item: "f.item = @food_item",
-  food_outlet: "f.outlet = @outlet",
-  food_area: "f.area = @area",
+  item: "f.item = @food_item",
+  outlet: "f.outlet = @outlet",
+  area: "f.area = @area",
 };
 
 export const transportFilterConditionMap = {
@@ -107,27 +107,27 @@ export const transportFilterConditionMap = {
 };
 
 export const groceryFilterConditionMap = {
-  grocery_item: "gr.item = @grocery_item",
-  grocery_quantity: "gr.quantity = @grocery_quantity",
-  grocery_category: "gr.category = @category",
-  grocery_brand: "gr.brand = @grocery_brand",
-  grocery_store: "gr.store = @grocery_store",
+  item: "gr.item = @grocery_item",
+  quantity: "gr.quantity = @grocery_quantity",
+  category: "gr.category = @category",
+  brand: "gr.brand = @grocery_brand",
+  store: "gr.store = @grocery_store",
 };
 
 export const stationaryFilterConditionMap = {
-  stationary_item: "s.item = @stationary_item",
-  stationary_quantity: "s.quantity = @stationary_quantity",
-  stationary_category: "s.category = @stationary_category",
-  stationary_brand: "s.brand = @stationary_brand",
-  stationary_store: "s.store = @stationary_store",
+  item: "s.item = @stationary_item",
+  quantity: "s.quantity = @stationary_quantity",
+  category: "s.category = @stationary_category",
+  brand: "s.brand = @stationary_brand",
+  store: "s.store = @stationary_store",
 };
 
 export const clothesFilterConditionMap = {
-  clothes_item: "clo.item = @clothes_item",
-  clothes_quantity: "clo.quantity = @clothes_quantity",
-  clothes_category: "clo.category = @clothes_category",
-  clothes_brand: "clo.brand = @clothes_brand",
-  clothes_store: "clo.store = @clothes_store",
+  item: "clo.item = @clothes_item",
+  quantity: "clo.quantity = @clothes_quantity",
+  category: "clo.category = @clothes_category",
+  brand: "clo.brand = @clothes_brand",
+  store: "clo.store = @clothes_store",
 };
 
 export const allFilterConditionMap = {
