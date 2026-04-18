@@ -1,7 +1,4 @@
-import {
-  allFilterConditionMap,
-  queryParamsMap,
-} from "./expenses.mapper";
+import { allFilterConditionMap, queryParamsMap } from "./expenses.mapper";
 import { ExpenseTypes } from "shared/types/expense";
 import {
   IExpenseFilters,

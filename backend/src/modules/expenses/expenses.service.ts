@@ -9,17 +9,10 @@ import {
 import { IAllFilters } from "shared/types/queryFilters";
 import { getDetailsQueryMap } from "./expenses.mapper";
 import {
-  createExpenseQuery,
   expensesColumnsString,
   expensesFromString,
-  getDeletedExpenseByIdQuery,
-  hardDeleteExpenseQuery,
-  softDeleteExpenseQuery,
   typeNameQuery,
-  undoDeleteExpenseQuery,
 } from "./queries/expense.sql";
-import { logger } from "backend/src/plugins/loggerPlugin";
-import { isError } from "backend/src/utils/isError";
 import {
   buildCreateQuery,
   buildFilters,

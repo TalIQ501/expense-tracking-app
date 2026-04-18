@@ -4,7 +4,6 @@ import {
   hardDeleteExpenseQuery,
   getDeletedExpenseByIdQuery,
   softDeleteExpenseQuery,
-  typeNameQuery,
   undoDeleteExpenseQuery,
 } from "./queries/expense.sql";
 import { logger } from "../../plugins/loggerPlugin";
