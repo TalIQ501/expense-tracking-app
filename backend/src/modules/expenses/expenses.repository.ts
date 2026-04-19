@@ -5,6 +5,8 @@ import {
   getDeletedExpenseByIdQuery,
   softDeleteExpenseQuery,
   undoDeleteExpenseQuery,
+  expensesColumnsString,
+  expensesFromString,
 } from "./queries/expense.sql";
 import { logger } from "../../plugins/loggerPlugin";
 import { isError } from "../../utils/isError";
@@ -13,6 +15,10 @@ import type {
   ExpenseRequestTypes,
   IRequestBodyExtra,
 } from "../../../../shared/types/request";
+import { getDetailsQueryMap } from "./expenses.mapper";
+import { ExpenseTypes } from "shared/types/expense";
+import { parseExpenseMap } from "./expenses.parser";
+import { buildCreateQuery, buildUpdateQuery } from "./expenses.builder";
 
 interface TypeIdRes {
   type_id: number;
@@ -40,51 +46,78 @@ export const expenseRepository = (db: Database) => {
   };
 
   const getAll = (
-    query: string,
-    params: Record<string, unknown>,
-    pageSize: number,
-    offset: number,
+    generatedFilters: {
+      conditions: string[];
+      params: Record<string, unknown>;
+      offset: number;
+      sortDesc: boolean;
+      sort: string;
+    },
+    pageFilters: { page: number; pageSize: number },
   ) => {
-    try {
-      const data = db
-        .prepare(query)
-        .all({ ...params, pageSize: pageSize ?? 20, offset });
+    const { conditions, params, offset, sort, sortDesc } = generatedFilters;
 
-      return data;
-    } catch (ex: unknown) {
-      if (isError(ex)) {
-        logger.error(ex.message);
-      }
+    const query = `
+      SELECT 
+      e.id, e.expense_date, e.amount, e.type_id, e.rating, e.recorded_at, e.last_updated_at, e.deleted_at, 
+      c.name as expense_type,
+      gen.purpose, gen.description, gen.given_to,
+      f.outlet, f.area,
+      t.mode, t.origin, t.origin_region, t.destination, t.destination_region, t.service_name,
+      COALESCE(gen.address, f.address) as address,
+      COALESCE(f.item, gr.item, s.item, clo.item) as item,
+      COALESCE(f.quantity, gr.quantity, s.quantity, clo.quantity) as quantity,
+      COALESCE(gr.category, s.category, clo.category) as category
+      FROM expenses e
+      JOIN expense_types c ON e.type_id = c.id
+      LEFT JOIN general_expenses gen ON gen.expense_id = e.id
+      LEFT JOIN food_expenses f ON f.expense_id = e.id
+      LEFT JOIN transport_expenses t ON t.expense_id = e.id
+      LEFT JOIN grocery_expenses gr ON gr.expense_id = e.id
+      LEFT JOIN stationary_expenses s ON s.expense_id = e.id
+      LEFT JOIN clothes_expenses clo ON clo.expense_id = e.id
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
+      LIMIT @pageSize OFFSET @offset
+    `;
 
-      logger.error("Server Error");
-    }
+    const data = db
+      .prepare(query)
+      .all({ ...params, pageSize: pageFilters.pageSize ?? 20, offset });
 
-    return;
+    return data;
   };
 
-  const getById = (id: number, query: string) => {
-    try {
-      const expense = db.prepare(query).get({ id });
+  const getById = (id: number, type: ExpenseTypes) => {
+    const getDetailsQueries = (type: ExpenseRequestTypes) =>
+      getDetailsQueryMap[type];
 
-      if (!expense) {
-        throw new Error("Could not find record");
-      }
+    const detailsQueries = getDetailsQueries(type);
 
-      return expense;
-    } catch (ex) {
-      if (isError(ex)) {
-        logger.error(ex.message);
-      }
+    const query = `
+      SELECT ${expensesColumnsString},
+      ${detailsQueries.columns}
+      ${expensesFromString}
+      ${detailsQueries.join}
+      WHERE e.id = @id
+    `;
 
-      logger.error("Server Error");
+    const expense = db.prepare(query).get({ id });
+
+    if (!expense) {
+      throw new Error("Could not find record");
     }
+
+    return expense;
   };
 
   const create = (
     expense: IExpenseRequestBody,
-    createQuery: string,
+    type: ExpenseTypes,
     extraData: IRequestBodyExtra,
   ) => {
+    const createQuery = buildCreateQuery(type, extraData);
+
     const createTransaction = db.transaction(() => {
       const expenseEntry = db.prepare(createExpenseQuery).run({ expense });
 
@@ -105,10 +138,11 @@ export const expenseRepository = (db: Database) => {
     expense_id: number,
     expense: IExpenseRequestBody,
     extraData: IRequestBodyExtra,
-    updateExpenseQuery: string,
-    isDetailsQuery: boolean,
-    updateDetailsQuery?: string,
+    type: ExpenseTypes,
   ) => {
+    const { updateDetailsQuery, updateExpenseQuery, isDetailsQuery } =
+      buildUpdateQuery(type, expense, extraData);
+
     const updateTransaction = db.transaction(() => {
       db.prepare(updateExpenseQuery).run({
         expense_id,

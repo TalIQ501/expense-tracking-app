@@ -53,7 +53,7 @@ export const buildFilters = (
     params,
     offset,
     sort,
-    sortDesc: sortFilters?.sort_desc,
+    sortDesc: sortFilters?.sort_desc as boolean,
   };
 };
 

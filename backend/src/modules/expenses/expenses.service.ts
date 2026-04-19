@@ -4,7 +4,6 @@ import {
   ExpenseRequestTypes,
   IRequestBody,
   type IExpenseRequestBody,
-  type IRequestBodyExtra,
 } from "shared/types/request";
 import { IAllFilters } from "shared/types/queryFilters";
 import { getDetailsQueryMap } from "./expenses.mapper";
@@ -51,42 +50,18 @@ export const expenseService = (db: Database) => {
     const parsedSortDesc = sort_desc === "false" ? false : true;
 
     const sortFilters = {
-      sort_desc: parsedSortDesc,
       sort_type: sort_type,
+      sort_desc: parsedSortDesc,
     };
 
-    const { conditions, params, offset, sort, sortDesc } = buildFilters(
+    const generatedFilters = buildFilters(
       filters,
       { page, pageSize },
       parseDeleted,
       sortFilters,
     );
 
-    const getAllQuery = `
-        SELECT 
-        e.id, e.expense_date, e.amount, e.type_id, e.rating, e.recorded_at, e.last_updated_at, e.deleted_at, 
-        c.name as expense_type,
-        gen.purpose, gen.description, gen.given_to,
-        f.outlet, f.area,
-        t.mode, t.origin, t.origin_region, t.destination, t.destination_region, t.service_name,
-        COALESCE(gen.address, f.address) as address,
-        COALESCE(f.item, gr.item, s.item, clo.item) as item,
-        COALESCE(f.quantity, gr.quantity, s.quantity, clo.quantity) as quantity,
-        COALESCE(gr.category, s.category, clo.category) as category
-        FROM expenses e
-        JOIN expense_types c ON e.type_id = c.id
-        LEFT JOIN general_expenses gen ON gen.expense_id = e.id
-        LEFT JOIN food_expenses f ON f.expense_id = e.id
-        LEFT JOIN transport_expenses t ON t.expense_id = e.id
-        LEFT JOIN grocery_expenses gr ON gr.expense_id = e.id
-        LEFT JOIN stationary_expenses s ON s.expense_id = e.id
-        LEFT JOIN clothes_expenses clo ON clo.expense_id = e.id
-        WHERE ${conditions.join(" AND ")}
-        ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
-        LIMIT @pageSize OFFSET @offset
-      `;
-
-    return repo.getAll(getAllQuery, params, pageSize, offset);
+    return repo.getAll(generatedFilters, { page, pageSize });
   };
 
   const getById = (idString: string) => {
@@ -94,37 +69,26 @@ export const expenseService = (db: Database) => {
 
     const type = getTypeById(id);
 
-    const getDetailsQueries = (type: ExpenseRequestTypes) =>
-      getDetailsQueryMap[type];
-
-    const detailsQueries = getDetailsQueries(type);
-
-    const query = `
-      SELECT ${expensesColumnsString},
-      ${detailsQueries.columns}
-      ${expensesFromString}
-      ${detailsQueries.join}
-      WHERE e.id = @id
-    `;
-
-    const expense = repo.getById(id, query);
-
-    return expense;
+    return repo.getById(id, type);
   };
 
-  const create = (
-    expense: IExpenseRequestBody,
-    extraData: IRequestBodyExtra,
-  ) => {
-    const typeId = Number(expense.type_id);
+  const create = (body: IRequestBody) => {
+    const { expense_date, amount, type_id, rating, ...extraData } = body;
 
-    const type: ExpenseRequestTypes = selectType(typeId);
+    const typeId = Number(type_id);
 
-    const createQuery = buildCreateQuery(type, extraData);
+    const expense = parseExpenseMap["expense"]({
+      expense_date,
+      amount,
+      type_id,
+      rating,
+    });
+
+    const type = selectType(typeId);
 
     const parsedData = parseExpenseMap[type](extraData);
 
-    repo.create(expense, createQuery, parsedData);
+    repo.create(expense, type, parsedData);
   };
 
   const softDelete = (id: number) => {
@@ -138,28 +102,14 @@ export const expenseService = (db: Database) => {
 
     const type = getTypeById(expenseId);
 
-    const parseFn = parseExpenseMap["expense"];
-
-    const expense: IExpenseRequestBody = parseFn({
+    const expense: IExpenseRequestBody = parseExpenseMap["expense"]({
       expense_date,
       amount,
       type_id,
       rating,
     });
 
-    const { updateDetailsQuery, updateExpenseQuery, isDetailsQuery } =
-      buildUpdateQuery(type, expense, extraData);
-
-    const updated = repo.update(
-      expenseId,
-      expense,
-      extraData,
-      updateExpenseQuery,
-      isDetailsQuery,
-      updateDetailsQuery,
-    );
-
-    return updated;
+    return repo.update(expenseId, expense, extraData, type);
   };
 
   const hardDelete = (id: number) => {
