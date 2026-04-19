@@ -8,8 +8,6 @@ import {
   expensesColumnsString,
   expensesFromString,
 } from "./queries/expense.sql";
-import { logger } from "../../plugins/loggerPlugin";
-import { isError } from "../../utils/isError";
 import type {
   IExpenseRequestBody,
   ExpenseRequestTypes,
@@ -17,8 +15,8 @@ import type {
 } from "../../../../shared/types/request";
 import { getDetailsQueryMap } from "./expenses.mapper";
 import { ExpenseTypes } from "shared/types/expense";
-import { parseExpenseMap } from "./expenses.parser";
 import { buildCreateQuery, buildUpdateQuery } from "./expenses.builder";
+import { NotFoundError } from "../../utils/errors";
 
 interface TypeIdRes {
   type_id: number;
@@ -41,6 +39,8 @@ export const expenseRepository = (db: Database) => {
         `,
       )
       .get({ id }) as TypeIdRes;
+
+    if (!typeId) throw new NotFoundError("Record not found");
 
     return typeId;
   };
@@ -105,7 +105,7 @@ export const expenseRepository = (db: Database) => {
     const expense = db.prepare(query).get({ id });
 
     if (!expense) {
-      throw new Error("Could not find record");
+      throw new NotFoundError("Could not find record");
     }
 
     return expense;
@@ -119,7 +119,7 @@ export const expenseRepository = (db: Database) => {
     const createQuery = buildCreateQuery(type, extraData);
 
     const createTransaction = db.transaction(() => {
-      const expenseEntry = db.prepare(createExpenseQuery).run({ expense });
+      const expenseEntry = db.prepare(createExpenseQuery).run(expense);
 
       db.prepare(createQuery).run({
         expense_id: expenseEntry.lastInsertRowid,

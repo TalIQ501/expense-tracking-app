@@ -90,7 +90,7 @@ export const buildUpdateQuery = (
   expenseData: IExpenseRequestBody,
   extraData?: IRequestBodyExtra,
 ) => {
-  const expenseMap = queryParamsMap["expenses"];
+  const expenseMap = queryParamsMap["expense"];
   const extraMap = queryParamsMap[type];
 
   const generateStatements = (

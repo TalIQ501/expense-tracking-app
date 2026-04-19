@@ -49,7 +49,7 @@ export const expenseFilterConditionMap = {
 };
 
 export const queryParamsMap = {
-  expenses: expensesQueryMap,
+  expense: expensesQueryMap,
   general: generalQueryMap,
   food: foodQueryMap,
   transport: transportQueryMap,

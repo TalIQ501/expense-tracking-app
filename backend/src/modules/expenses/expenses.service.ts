@@ -6,18 +6,11 @@ import {
   type IExpenseRequestBody,
 } from "shared/types/request";
 import { IAllFilters } from "shared/types/queryFilters";
-import { getDetailsQueryMap } from "./expenses.mapper";
-import {
-  expensesColumnsString,
-  expensesFromString,
-  typeNameQuery,
-} from "./queries/expense.sql";
-import {
-  buildCreateQuery,
-  buildFilters,
-  buildUpdateQuery,
-} from "./expenses.builder";
+import { typeNameQuery } from "./queries/expense.sql";
+import { buildFilters } from "./expenses.builder";
 import { parseExpenseMap } from "./expenses.parser";
+import { ValidationError } from "../../utils/errors";
+import { logger } from "../../plugins/loggerPlugin";
 
 interface TypeIdRes {
   type_id: number;
@@ -75,6 +68,12 @@ export const expenseService = (db: Database) => {
   const create = (body: IRequestBody) => {
     const { expense_date, amount, type_id, rating, ...extraData } = body;
 
+    logger.info(expense_date);
+
+    if (!type_id) throw new ValidationError("type_id is required");
+    if (!amount) throw new ValidationError("amount is required");
+    if (!expense_date) throw new ValidationError("expense_date is required");
+
     const typeId = Number(type_id);
 
     const expense = parseExpenseMap["expense"]({
@@ -88,7 +87,7 @@ export const expenseService = (db: Database) => {
 
     const parsedData = parseExpenseMap[type](extraData);
 
-    repo.create(expense, type, parsedData);
+    return repo.create(expense, type, parsedData);
   };
 
   const softDelete = (id: number) => {
