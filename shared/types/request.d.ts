@@ -16,8 +16,8 @@ export interface IGeneralRequestBody {
 export interface IFoodRequestBody {
   item?: string;
   quantity?: number;
-  outlet?: number;
-  area?: number;
+  outlet?: string;
+  area?: string;
   address?: string;
 }
 
