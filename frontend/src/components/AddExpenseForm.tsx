@@ -63,8 +63,6 @@ export const AddExpenseForm = () => {
     const fields = EXPENSE_FIELDS[formTypeState];
     const typeId = getExpenseTypeId(formTypeState);
 
-    console.log(form);
-
     const schema = buildSchema(fields);
 
     const result = schema.safeParse(form);

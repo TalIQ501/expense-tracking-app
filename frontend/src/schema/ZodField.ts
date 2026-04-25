@@ -59,3 +59,4 @@ export const buildSchema = (fields: FieldConfig[]) => {
 
   return z.object(shape);
 };
+   
