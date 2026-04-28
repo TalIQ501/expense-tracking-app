@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { useExpenseStore } from "../store/useExpenseStore";
 import { ExpenseItem } from "./ExpenseItem";
 import { Loading } from "./Loading";
+import { useFilters } from "../hooks/useFilters";
 
 export const ExpenseList = () => {
   const { expenses, loading, error, fetchExpenses } = useExpenseStore();
 
+  const { filters } = useFilters();
+
   useEffect(() => {
-    fetchExpenses();
+    fetchExpenses(filters);
   }, [fetchExpenses]);
 
   if (loading) return <Loading />;
