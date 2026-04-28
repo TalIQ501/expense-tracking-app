@@ -46,7 +46,7 @@ export const buildFilters = (
     params[key] = value;
   });
 
-  const offset = ((pageFilters?.page ?? 1) - 1) * (pageFilters?.pageSize ?? 20);
+  const offset = ((pageFilters?.page ?? 1) - 1) * (pageFilters?.page_size ?? 20);
 
   return {
     conditions,

@@ -1,5 +1,5 @@
 export interface IExpenseFilters {
-  deleted?: string;
+  deleted?: boolean;
   expense_date?: string;
   date_from?: string;
   date_to?: string;
@@ -18,7 +18,7 @@ export interface IExpenseFilters {
 
 export interface IPageFilters {
   page: number;
-  pageSize: number;
+  page_size: number;
 }
 
 export interface IGeneralFilters {
@@ -71,11 +71,6 @@ export interface ISortFilters {
   sort_type?: string;
 }
 
-export interface ISortFiltersRequest {
-  sort_desc?: string;
-  sort_type?: string;
-}
-
 export type IAllConditionFilters = IExpenseFilters &
   IGeneralFilters &
   IFoodFilters &
@@ -84,4 +79,4 @@ export type IAllConditionFilters = IExpenseFilters &
   IStationaryFilters &
   IClothesFilters;
 
-export type IAllFilters = ISortFiltersRequest & IPageFilters & IAllConditionFilters;
+export type IAllFilters = ISortFilters & IPageFilters & IAllConditionFilters;

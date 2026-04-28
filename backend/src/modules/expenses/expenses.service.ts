@@ -36,21 +36,17 @@ export const expenseService = (db: Database) => {
   };
 
   const getAll = (body: IAllFilters) => {
-    const { page, pageSize, deleted, sort_desc, sort_type, ...filters } = body;
-
-    const parseDeleted = deleted === "true" ? true : false;
-
-    const parsedSortDesc = sort_desc === "false" ? false : true;
+    const { page, page_size: pageSize, deleted = false, sort_desc = false, sort_type, ...filters } = body;
 
     const sortFilters = {
-      sort_type: sort_type,
-      sort_desc: parsedSortDesc,
+      sort_type,
+      sort_desc,
     };
 
     const generatedFilters = buildFilters(
       filters,
-      { page, pageSize },
-      parseDeleted,
+      { page, page_size: pageSize },
+      deleted,
       sortFilters,
     );
 
