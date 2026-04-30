@@ -5,12 +5,13 @@ import {
   IRequestBody,
   type IExpenseRequestBody,
 } from "shared/types/request";
-import { IAllFilters } from "shared/types/queryFilters";
 import { typeNameQuery } from "./queries/expense.sql";
 import { buildFilters } from "./expenses.builder";
-import { parseExpenseMap } from "./expenses.parser";
+import { parseExpenseMap } from "./expenses.queryParser";
 import { ValidationError } from "../../utils/errors";
 import { logger } from "../../plugins/loggerPlugin";
+import { IAllFiltersRequest } from "shared/types/queryRequest";
+import { filterParser } from "./expenses.filterParser";
 
 interface TypeIdRes {
   type_id: number;
@@ -35,8 +36,10 @@ export const expenseService = (db: Database) => {
     return type;
   };
 
-  const getAll = (body: IAllFilters) => {
-    const { page, page_size: pageSize, deleted = false, sort_desc = false, sort_type, ...filters } = body;
+  const getAll = (body: IAllFiltersRequest) => {
+    const parsedFilters = filterParser(body)
+
+    const { page, page_size, deleted = false, sort_desc = false, sort_type, ...filters } = parsedFilters;
 
     const sortFilters = {
       sort_type,
@@ -45,12 +48,12 @@ export const expenseService = (db: Database) => {
 
     const generatedFilters = buildFilters(
       filters,
-      { page, page_size: pageSize },
+      { page, page_size },
       deleted,
       sortFilters,
     );
 
-    return repo.getAll(generatedFilters, { page, pageSize });
+    return repo.getAll(generatedFilters, { page, page_size });
   };
 
   const getById = (idString: string) => {

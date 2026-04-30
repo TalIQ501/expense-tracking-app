@@ -3,6 +3,7 @@ import type { IAllFilters } from "../../../../shared/types/queryFilters";
 import type { IRequestBody } from "../../../../shared/types/request";
 import { expenseService } from "./expenses.service";
 import { DatabaseError, ValidationError } from "../../utils/errors";
+import { IAllFiltersRequest } from "shared/types/queryRequest";
 
 export const expenseRouter: FastifyPluginAsync = async (
   app: FastifyInstance,
@@ -14,7 +15,7 @@ export const expenseRouter: FastifyPluginAsync = async (
   const service = expenseService(app.db);
 
   app.get("/", async (req, reply) => {
-    const body = req.query as IAllFilters;
+    const body = req.query as IAllFiltersRequest;
     return service.getAll(body);
   });
 

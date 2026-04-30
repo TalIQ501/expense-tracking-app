@@ -17,6 +17,7 @@ import { getDetailsQueryMap } from "./expenses.mapper";
 import { ExpenseTypes } from "shared/types/expense";
 import { buildCreateQuery, buildUpdateQuery } from "./expenses.builder";
 import { NotFoundError } from "../../utils/errors";
+import { IPageFilters } from "shared/types/queryFilters";
 
 interface TypeIdRes {
   type_id: number;
@@ -53,7 +54,7 @@ export const expenseRepository = (db: Database) => {
       sortDesc: boolean;
       sort: string;
     },
-    pageFilters: { page: number; pageSize: number },
+    pageFilters: IPageFilters,
   ) => {
     const { conditions, params, offset, sort, sortDesc } = generatedFilters;
 
@@ -83,7 +84,7 @@ export const expenseRepository = (db: Database) => {
 
     const data = db
       .prepare(query)
-      .all({ ...params, pageSize: pageFilters.pageSize ?? 20, offset });
+      .all({ ...params, page_size: pageFilters.page_size ?? 20, offset });
 
     return data;
   };

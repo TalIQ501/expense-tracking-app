@@ -6,14 +6,14 @@ export interface IExpenseFilters {
   amount?: string;
   amount_from?: string;
   amount_to?: string;
-  type_id?: string;
+  type_id?: number;
   expense_type?: string;
   recorded_at?: string;
   recorded_from?: string;
   recorded_to?: string;
-  rating?: string;
-  rating_from?: string;
-  rating_to?: string;
+  rating?: number;
+  rating_from?: number;
+  rating_to?: number;
 }
 
 export interface IPageFilters {

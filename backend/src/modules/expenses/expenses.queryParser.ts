@@ -8,21 +8,21 @@ import {
   ITransportRequestBody,
 } from "shared/types/request";
 
-const mainExpenseValidator = (data: IExpenseRequestBody) => ({
+const mainExpenseParser = (data: IExpenseRequestBody) => ({
   expense_date: data.expense_date?.trim(),
   amount: Number(data.amount),
   type_id: Number(data.type_id),
   rating: Number(data.rating),
 });
 
-const generalValidator = (data: IGeneralRequestBody) => ({
+const generalExpenseParser = (data: IGeneralRequestBody) => ({
   purpose: data.purpose?.trim(),
   description: data.description?.trim(),
   given_to: data.given_to?.trim(),
   address: data.address?.trim(),
 });
 
-const foodValidator = (data: IFoodRequestBody) => ({
+const foodExpenseParser = (data: IFoodRequestBody) => ({
   item: data.item?.trim(),
   quantity: Number(data.quantity),
   outlet: data.outlet?.trim(),
@@ -30,7 +30,7 @@ const foodValidator = (data: IFoodRequestBody) => ({
   address: data.address?.trim(),
 });
 
-const transportValidator = (data: ITransportRequestBody) => ({
+const transportExpenseParser = (data: ITransportRequestBody) => ({
   mode: data.mode?.trim(),
   origin: data.origin?.trim(),
   origin_region: data.origin_region?.trim(),
@@ -39,7 +39,7 @@ const transportValidator = (data: ITransportRequestBody) => ({
   service_name: data.service_name?.trim(),
 });
 
-const groceryValidator = (data: IGroceryRequestBody) => ({
+const groceryExpenseParser = (data: IGroceryRequestBody) => ({
   item: data.item?.trim(),
   quantity: Number(data.quantity),
   category: data.category?.trim(),
@@ -48,7 +48,7 @@ const groceryValidator = (data: IGroceryRequestBody) => ({
   address: data.address?.trim(),
 });
 
-const stationaryValidator = (data: IStationaryRequestBody) => ({
+const stationaryExpenseParser = (data: IStationaryRequestBody) => ({
   item: data.item?.trim(),
   quantity: Number(data.quantity),
   category: data.category?.trim(),
@@ -57,7 +57,7 @@ const stationaryValidator = (data: IStationaryRequestBody) => ({
   address: data.address?.trim(),
 });
 
-const clothesValidator = (data: IClothesRequestBody) => ({
+const clothesExpenseParser = (data: IClothesRequestBody) => ({
   item: data.item?.trim(),
   quantity: Number(data.quantity),
   category: data.category?.trim(),
@@ -67,11 +67,11 @@ const clothesValidator = (data: IClothesRequestBody) => ({
 });
 
 export const parseExpenseMap = {
-  expense: mainExpenseValidator,
-  general: generalValidator,
-  food: foodValidator,
-  transport: transportValidator,
-  stationary: stationaryValidator,
-  grocery: groceryValidator,
-  clothes: clothesValidator,
+  expense: mainExpenseParser,
+  general: generalExpenseParser,
+  food: foodExpenseParser,
+  transport: transportExpenseParser,
+  stationary: stationaryExpenseParser,
+  grocery: groceryExpenseParser,
+  clothes: clothesExpenseParser,
 };
