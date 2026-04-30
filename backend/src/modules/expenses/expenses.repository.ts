@@ -79,7 +79,7 @@ export const expenseRepository = (db: Database) => {
       LEFT JOIN clothes_expenses clo ON clo.expense_id = e.id
       WHERE ${conditions.join(" AND ")}
       ORDER BY ${sort} ${sortDesc ? "DESC" : ""}
-      LIMIT @pageSize OFFSET @offset
+      LIMIT @page_size OFFSET @offset
     `;
 
     const data = db

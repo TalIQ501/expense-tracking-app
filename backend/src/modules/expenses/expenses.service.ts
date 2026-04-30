@@ -39,7 +39,7 @@ export const expenseService = (db: Database) => {
   const getAll = (body: IAllFiltersRequest) => {
     const parsedFilters = filterParser(body)
 
-    const { page, page_size, deleted = false, sort_desc = false, sort_type, ...filters } = parsedFilters;
+    const { page, page_size, deleted = false, sort_desc = false, sort_type, ...remFilters } = parsedFilters;
 
     const sortFilters = {
       sort_type,
@@ -47,7 +47,7 @@ export const expenseService = (db: Database) => {
     };
 
     const generatedFilters = buildFilters(
-      filters,
+      remFilters,
       { page, page_size },
       deleted,
       sortFilters,
