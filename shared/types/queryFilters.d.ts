@@ -3,9 +3,10 @@ export interface IExpenseFilters {
   expense_date?: string;
   date_from?: string;
   date_to?: string;
-  amount?: string;
-  amount_from?: string;
-  amount_to?: string;
+  amount?: number;
+  amount_from?: number;
+  amount_to?: number;
+  categories?: string[];
   type_id?: number;
   expense_type?: string;
   recorded_at?: string;

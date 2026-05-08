@@ -6,6 +6,7 @@ export interface IExpenseFiltersRequest {
   amount?: string;
   amount_from?: string;
   amount_to?: string;
+  categories?: string | string[];
   type_id?: string;
   expense_type?: string;
   recorded_at?: string;
