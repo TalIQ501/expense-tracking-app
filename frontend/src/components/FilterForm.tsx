@@ -3,6 +3,8 @@ import { useFilters } from "../hooks/useFilters";
 import { useExpenseStore } from "../store/useExpenseStore";
 import { BatchFilter } from "./BatchFilter";
 import { BatchRadio } from "./BatchRadio";
+import { DateInput } from "./DateInput";
+import { ToggleButton } from "./ToggleButton";
 
 const categories = [
   { value: "general", label: "General" },
@@ -36,6 +38,10 @@ export const FilterForm = () => {
       <p className="text-lg">Filters</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 flex-1">
+        <ToggleButton
+          value={filters["deleted"]}
+          onChange={(val) => handleChange("deleted", val)}
+        />
         <div className="flex flex-col gap-3">
           <BatchRadio
             label="Page Size"
@@ -53,12 +59,17 @@ export const FilterForm = () => {
           label="Category"
           batch={categories}
           selected={filters.categories ?? []}
-          onChange={(categories) =>
-            handleChange(
-              "categories",
-              categories,
-            )
-          }
+          onChange={(categories) => handleChange("categories", categories)}
+        />
+        <DateInput
+          label="From Date"
+          value={filters.date_from ?? ""}
+          onChange={(val) => handleChange("date_from", val)}
+        />
+        <DateInput
+          label="To Date"
+          value={filters.date_to ?? ""}
+          onChange={(val) => handleChange("date_to", val)}
         />
 
         <button
